@@ -8,41 +8,17 @@ import java.util.Date;
  * Immutable.
  * @author Red
  */
-public final class Buyer {
-    private static int ID = -1;
-    private final int id;
+public final class Buyer extends IdentifiableInstanceManager {
     private final String name;
     
     public static Buyer none = new Buyer("Anyone");
 
     public Buyer(String name) {
-            this.id = ++ID;
-            this.name = name;
+        super();
+        this.name = name;
     }
 
-    public int getId() { return id; }
     public String getName() { return name; }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + this.id;
-        return hash;
-    }
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Buyer other = (Buyer) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

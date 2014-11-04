@@ -2,9 +2,7 @@ package balancemaker;
 
 import java.util.*;
 
-public class Transaction {
-    private static int ID = 0;
-    private final int id;
+public final class Transaction extends IdentifiableInstanceManager {
     private final String store;
     private final Date date;
     private final String receipt;
@@ -34,7 +32,7 @@ public class Transaction {
 
     public Transaction(String store, String receipt, Date date, float amount,
         Buyer buyer, boolean payback, ArrayList<Debt> debts) {
-            this.id = ++ID;
+            super();
             this.store = store;
             this.receipt = receipt;
             this.date = date;
@@ -49,7 +47,6 @@ public class Transaction {
                 throw new IllegalArgumentException("Non-null debt to oneself.");
         }
 
-    public int getId(){ return id; }
     public String getStore(){ return store; }
     public String getReceipt(){ return receipt; }
     public Date getDate(){ return date; }
@@ -59,33 +56,7 @@ public class Transaction {
     // I wish Iterators couldn't remove things. I really do.
     public Iterator<Debt> getDebtsIterator(){ return debts.iterator(); }
     public Debt getDebt(int index) { return debts.get(index); }
-
-    //public Transaction addDebt(Debt debt) { debts.add(debt); return this; }
-    /*public Transaction addDebt(float amount, Buyer debtor) {
-        return addDebt(new Debt(amount, debtor));
-    }*/
     
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + this.id;
-        return hash;
-    }
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Transaction other = (Transaction) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public String toString() {
         return "Transaction{" + "id=" + id + ", store=" + store
@@ -100,7 +71,6 @@ public class Transaction {
         else
             return toString();
     }
-    
     
     
     public Debt getDebtFromBuyer(Buyer b) {
