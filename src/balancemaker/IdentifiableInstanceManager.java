@@ -5,6 +5,10 @@
  */
 package balancemaker;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 
  * @author Red
@@ -38,4 +42,9 @@ public abstract class IdentifiableInstanceManager {
     }
     
     
+    
+    protected static ArrayList<? extends IdentifiableInstanceManager> list = new ArrayList<>();
+    protected static Map<Class, ArrayList<?>> map = new HashMap<>();
+    
+    //TODO: Implement InstanceManager functionality here and remove it from Manager
 }

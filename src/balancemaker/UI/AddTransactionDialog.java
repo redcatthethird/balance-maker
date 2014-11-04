@@ -168,6 +168,8 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                 receiptTextBox.getText(), Date.from(Instant.now()),
                 Float.valueOf(amountTextBox.getText()),
                 Buyer.none, true, null));
+        
+        //TODO: Validate fields before saving.
     }//GEN-LAST:event_saveButtonMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

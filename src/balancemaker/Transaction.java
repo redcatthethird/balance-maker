@@ -10,6 +10,8 @@ public final class Transaction extends IdentifiableInstanceManager {
     private final Buyer buyer;
     private final boolean payback;
     private final ArrayList<Debt> debts;
+    
+    // TODO: Remove getters, make variables public final and refactor code. For all my immutable classes.
 
     /**
      * Immutable.

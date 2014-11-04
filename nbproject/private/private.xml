@@ -3,8 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/M:/Dropbox/BalanceMaker/src/balancemaker/Buyer.java</file>
+            <file>file:/M:/Dropbox/BalanceMaker/src/balancemaker/Manager.java</file>
             <file>file:/M:/Dropbox/BalanceMaker/src/balancemaker/UI/BalanceMakerUI.java</file>
             <file>file:/M:/Dropbox/BalanceMaker/src/balancemaker/UI/AddTransactionDialog.java</file>
+            <file>file:/M:/Dropbox/BalanceMaker/src/balancemaker/IdentifiableInstanceManager.java</file>
+            <file>file:/M:/Dropbox/BalanceMaker/src/balancemaker/Transaction.java</file>
         </group>
     </open-files>
 </project-private>
