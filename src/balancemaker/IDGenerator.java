@@ -10,5 +10,5 @@ package balancemaker;
  * @author Red
  */
 public class IDGenerator {
-    // TODO: Implement functionality from chiastic-security's answer on SE
+    // TODO: Implement functionality from chiastic-security's answer on SE or simply integrate this into the InstanceManager as part of a pair along with a list
 }
