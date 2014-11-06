@@ -9,6 +9,11 @@ import balancemaker.*;
 import java.awt.Color;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
+import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.SimpleBooleanProperty;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -21,10 +26,22 @@ import org.jdesktop.xswingx.PromptSupport;
  * @author Andu
  */
 public class AddTransactionDialog extends javax.swing.JDialog {
-    
     private final Border defaultTextFieldBorder = new JTextField().getBorder();
     private final Border invalidTextFieldBorder = BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(Color.RED, 2), defaultTextFieldBorder);
+    
+    private final Map<JTextField, Predicate<String>> fieldValidators = new HashMap<>(3);
+    
+    private final DocumentListener textChangeListener = new DocumentListener() {
+        @Override
+        public void changedUpdate(DocumentEvent e) { validateFields(); }
+        @Override
+        public void removeUpdate(DocumentEvent e) { validateFields(); }
+        @Override
+        public void insertUpdate(DocumentEvent e) { validateFields(); }
+    };
+    
+    private BooleanPropertyBase fieldsValid = new SimpleBooleanProperty(true);
 
     /**
      * Creates new form AddTransactionDialog
@@ -42,9 +59,18 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         PromptSupport.setPrompt("Enter amount", amountTextBox);
         PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, amountTextBox);
         
-        validateStore();
-        validateAmount();
-        validateReceipt();
+        fieldValidators.put(storeTextBox, AddTransactionDialog::isNotEmpty);
+        fieldValidators.put(receiptTextBox, AddTransactionDialog::isNotEmpty);
+        fieldValidators.put(amountTextBox, AddTransactionDialog::isValidFloat);
+        
+        for (JTextField tf : fieldValidators.keySet())
+            tf.getDocument().addDocumentListener(textChangeListener);
+        
+        fieldsValid.addListener((o) -> saveButton.setEnabled(fieldsValid.get()));
+        
+        this.fieldsValid.set(false);
+        
+        validateFields();
     }
 
     @SuppressWarnings("unchecked")
@@ -65,25 +91,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         setTitle("Add transaction");
         setMinimumSize(new java.awt.Dimension(300, 316));
 
-        storeTextBox.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) { validateStore(); }
-            public void removeUpdate(DocumentEvent e) { validateStore(); }
-            public void insertUpdate(DocumentEvent e) { validateStore(); }
-        });
-
         jLabel2.setText("Date :");
-
-        receiptTextBox.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) { validateReceipt(); }
-            public void removeUpdate(DocumentEvent e) { validateReceipt(); }
-            public void insertUpdate(DocumentEvent e) { validateReceipt(); }
-        });
-
-        amountTextBox.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) { validateAmount(); }
-            public void removeUpdate(DocumentEvent e) { validateAmount(); }
-            public void insertUpdate(DocumentEvent e) { validateAmount(); }
-        });
 
         buyerList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Select a buyer", "Item 2", "Item 3", "Item 4" }));
 
@@ -164,10 +172,10 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonMouseClicked
 
     private void saveButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseClicked
-        Manager.transactions.add(new Transaction(storeTextBox.getText(),
+        /*Manager.transactions.add(new Transaction(storeTextBox.getText(),
                 receiptTextBox.getText(), Date.from(Instant.now()),
                 Float.valueOf(amountTextBox.getText()),
-                Buyer.none, true, null));
+                Buyer.none, true, null));*/
         
         //TODO: Validate fields before saving.
     }//GEN-LAST:event_saveButtonMouseClicked
@@ -184,23 +192,24 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     private javax.swing.JTextField storeTextBox;
     // End of variables declaration//GEN-END:variables
 
+    private void validateFields() {
+        boolean v = true;
+        for (Map.Entry<JTextField, Predicate<String>> e : fieldValidators.entrySet()) {
+            Boolean b = e.getValue().test(e.getKey().getText());
+            v = v && b;
+            Border border = b ? defaultTextFieldBorder : invalidTextFieldBorder;
+            e.getKey().setBorder(border);
+        }
+        fieldsValid.set(v);
+    }
     
-    private void validateStore() {
-        if (storeTextBox.getText().isEmpty())
-            storeTextBox.setBorder(invalidTextFieldBorder);
-        else storeTextBox.setBorder(defaultTextFieldBorder);
-    }
-    private void validateReceipt() {
-        if (receiptTextBox.getText().isEmpty())
-            receiptTextBox.setBorder(invalidTextFieldBorder);
-        else receiptTextBox.setBorder(defaultTextFieldBorder);
-    }
-    private void validateAmount() {
+    private static boolean isNotEmpty(String text) { return !text.isEmpty(); }
+    private static boolean isValidFloat(String text) {
         try {
-            Float.parseFloat(amountTextBox.getText());
-            amountTextBox.setBorder(defaultTextFieldBorder);
+            Float.parseFloat(text);
+            return true;
         } catch (NumberFormatException e) {
-            amountTextBox.setBorder(invalidTextFieldBorder);
+            return false;
         }
     }
 }

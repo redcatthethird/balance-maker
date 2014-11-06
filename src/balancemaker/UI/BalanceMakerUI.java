@@ -360,4 +360,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
             updateDebtLabel(null);
         }
     }
+    
+    // TODO: Try to translate everything to Groovy.
 }
