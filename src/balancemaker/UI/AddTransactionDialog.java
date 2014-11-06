@@ -164,7 +164,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonMouseClicked
 
     private void saveButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseClicked
-        Manager.addTransaction(new Transaction(storeTextBox.getText(),
+        Manager.transactions.add(new Transaction(storeTextBox.getText(),
                 receiptTextBox.getText(), Date.from(Instant.now()),
                 Float.valueOf(amountTextBox.getText()),
                 Buyer.none, true, null));

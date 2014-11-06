@@ -1,9 +1,5 @@
 package balancemaker;
 
-
-import java.util.ArrayList;
-import java.util.Date;
-
 /**
  * Immutable.
  * @author Red
@@ -31,7 +27,7 @@ public final class Buyer extends Identifiable {
     }
     
     // Shorthand forms for the Manager methods.
-    public ArrayList<Transaction> getTransactions() {
+    public java.util.List<Transaction> getTransactions() {
         return Manager.getTransactionsFromBuyer(this); }
     public float getDebts() { return Manager.getDebts(this); }
     public float getDebtsTo() { return Manager.getDebtsTo(this); }

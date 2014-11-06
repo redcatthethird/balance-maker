@@ -57,5 +57,4 @@ public class TransactionBuilder {
         
         return new Transaction(store, receipt, date, amount, buyer, payback, debts);
     }
-    
 }

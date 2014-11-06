@@ -19,20 +19,14 @@ public class TransactionTableModel extends AbstractTableModel {
     private final String[] columnNames = { "Id", "Store", "Date", "Receipt",
         "Amount", "Buyer", "Payback"};
     
-    public TransactionTableModel() {
-        Manager.updateBuyers();
-    }
-    
     @Override
-    public int getRowCount() { return Manager.getTransactionsNumber(); }
+    public int getRowCount() { return Manager.transactions.size(); }
     @Override
-    public int getColumnCount() {
-        return MIN_COLS + Manager.getBuyersNumber();
-    }
+    public int getColumnCount() { return MIN_COLS + Manager.buyers.size(); }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Transaction t = Manager.getTransaction(rowIndex);
+        Transaction t = Manager.transactions.get(rowIndex);
         if (columnIndex < MIN_COLS)
             switch (columnIndex) {
                 case 0: return t.getId();
@@ -45,37 +39,28 @@ public class TransactionTableModel extends AbstractTableModel {
                 default: return null;
             }
         else {
-            Buyer b = Manager.getBuyer(columnIndex - MIN_COLS);
+            Buyer b = Manager.buyers.get(columnIndex - MIN_COLS);
             return t.getDebtFromBuyer(b);
         }
     }
-    
     @Override
     public String getColumnName(int columnIndex) {
         if (columnIndex < MIN_COLS) {
             return columnNames[columnIndex];
         } else {
-            return Manager.getBuyer(columnIndex - MIN_COLS).getName();
+            return Manager.buyers.get(columnIndex - MIN_COLS).getName();
         }
     }
     @Override
     public Class getColumnClass(int columnIndex) {
         return getValueAt(0, columnIndex).getClass();
     }
-    
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) { return false; }
     
     
-    public void removeRow(int rowIndex) {
-        Manager.removeTransaction(rowIndex);
-        Manager.updateBuyers();
-    }
+    public void removeRow(int rowIndex) { Manager.transactions.remove(rowIndex); }
     public void removeRows(int rowStartIndex, int rowEndIndex) {
-        for (int i = rowEndIndex-1; i >= rowStartIndex; i--) {
-            //System.out.println(Manager.getTransaction(i));
-            Manager.removeTransaction(i);
-        }
-        Manager.updateBuyers();
+        Manager.transactions.remove(rowStartIndex, rowEndIndex);
     }
 }

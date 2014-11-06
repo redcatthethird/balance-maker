@@ -4,49 +4,22 @@ package balancemaker;
  *
  * @author Red
  */
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.BinaryOperator;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 public class Manager{
-    public static ArrayList<Transaction> transactions = new ArrayList<>();
-    public static ArrayList<Buyer> buyers = new ArrayList<>();
+    public final static ObservableList<Transaction> transactions = FXCollections.observableArrayList();
+    public final static ObservableList<Buyer> buyers = FXCollections.observableArrayList();
     private static final BinaryOperator<Float> sum = (x, y) -> x + y;
     
-    public static void addTransaction(Transaction t) {
-        transactions.add(t);
-    }
-    public static void appendTransactionList(ArrayList<Transaction> tList){
-        transactions.addAll(tList);
-    }
-    // The list of Buyers should be updated after removing any Transaction.
-    public static void removeTransaction(int tIndex) {
-        transactions.remove(tIndex);
-    }
-    public static void addBuyer(Buyer b) {
-        if (!buyers.contains(b))
-            buyers.add(b);
-    }
-    public static Iterator<Transaction> getTransactionsIterator() {
-        return transactions.iterator();
-    }
-    public static Iterator<Buyer> getBuyersIterator() {
-        return buyers.iterator();
-    }
-    public static int getTransactionsNumber() { return transactions.size(); }
-    public static int getBuyersNumber() { return buyers.size(); }
-    public static Transaction getTransaction(int index) {
-        return transactions.get(index);
-    }
-    // The index will correspond to the Buyer's id.
-    public static Buyer getBuyer(int index) { return buyers.get(index); }
+    static { transactions.addListener(Manager::updateBuyers); }
     
-    public static ArrayList<Transaction> getTransactionsFromBuyer(Buyer b) {
-        ArrayList<Transaction> tList = new ArrayList<>();
-        for (Transaction t: transactions)
-            if (t.getBuyer().equals(b))
-                tList.add(t);
-        return tList;
+    public static List<Transaction> getTransactionsFromBuyer(Buyer b) {
+        return transactions.stream().filter((t) -> (t.getBuyer().equals(b)))
+                .collect(Collectors.toList());
     }
     
     // Returns the amount b should pay.
@@ -60,8 +33,7 @@ public class Manager{
         for (Transaction t : transactions)
             if (t.getBuyer().equals(b))
                 debt += t.getDebtList().stream()
-                        .map(Transaction.Debt::getAmount)
-                        .reduce(0f, sum);
+                         .map(Transaction.Debt::getAmount).reduce(0f, sum);
         return debt;
     }
     // Returns the amount b should receive.
@@ -106,16 +78,19 @@ public class Manager{
     
     // This will populate the buyers list with all buyers referenced
     // and will remove any duplicate buyers.
-    public static void updateBuyers() {
-        //addBuyer(Buyer.none);
+    private static void updateBuyers(javafx.beans.Observable o) {
+        LinkedList<Buyer> temp = new LinkedList<>();
         buyers.clear();
         for (Transaction t : transactions) {
-            addBuyer(t.getBuyer());
-            t.getDebtList().forEach((d) -> addBuyer(d.getDebtor()));
+            temp.add(t.getBuyer());
+            t.getDebtList().forEach((d) -> temp.add(d.getDebtor()));
         }
-        buyers = buyers.stream()
+        buyers.addAll(
+                temp.stream().distinct()
                 .sorted((Buyer o1, Buyer o2) -> o1.getId() - o2.getId())
-                .distinct()
-                .collect(ArrayList<Buyer>::new, ArrayList<Buyer>::add, ArrayList<Buyer>::addAll);
+                .collect(Collectors.toCollection(FXCollections::observableArrayList))
+        );
     }
+    
+    // TODO: Unstatify the Manager.
 }

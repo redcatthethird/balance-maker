@@ -25,7 +25,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
      * Creates new form BalanceMakerUI
      */
     public BalanceMakerUI() {
-        preInit();
         initComponents();
         postInit();
     }
@@ -251,7 +250,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
     private javax.swing.JTable transactionTable;
     // End of variables declaration//GEN-END:variables
 
-    private void preInit() { }
     private void postInit() {
         populateList();
         buyerLeft.addItemListener(this::updateDebtLabel);
@@ -279,8 +277,8 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
         Object sel = model.getSelectedItem();
         model.removeAllElements();
         model.addElement(Buyer.none, false);
-        for (Iterator<Buyer> it = Manager.getBuyersIterator(); it.hasNext();)
-            model.addElement(it.next(), false);
+        for (Buyer b : Manager.buyers)
+            model.addElement(b, false);
         
         // If a Buyer other than Buyer.none was selected, remove it from here.
         if (!otherSelBuyer.equals(Buyer.none))
@@ -297,8 +295,9 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
         float debt = 0f;
 
         if (lNone && rNone) {
-            for (Iterator it = Manager.getBuyersIterator(); it.hasNext();)
-                debt += ((Buyer)it.next()).getDebtsTo();
+            debt = Manager.buyers.stream()
+                    .map((b) -> b.getDebtsTo())
+                    .reduce(0f, (x, y) -> x + y);
         }
         else if (lNone && !rNone)
             debt = r.getDebtsTo();
@@ -314,17 +313,16 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
         Buyer Ciupi = new Buyer("Ciupi");
         Buyer Claudiu = new Buyer("Claudiu");
         
-        Manager.addTransaction(new TransactionBuilder().Store("Morrisons")
+        Manager.transactions.add(new TransactionBuilder().Store("Morrisons")
             .Amount(52f).Buyer(Ciupi).addDebt(3f, Andu).addDebt(5f, Claudiu)
             .createTransaction());
-        Manager.addTransaction(new TransactionBuilder().Store("Sainsbury's")
+        Manager.transactions.add(new TransactionBuilder().Store("Sainsbury's")
             .Amount(13f).Buyer(Andu).addDebt(6f, Ciupi).addDebt(3f, Claudiu)
             .Receipt("Ghici").Payback(true).createTransaction());
         
         fireTableChanged();
     }
     public void fireTableChanged() {
-        Manager.updateBuyers();
         syncBuyerComboBox(buyerLeft, Buyer.none);
         syncBuyerComboBox(buyerRight, Buyer.none);
         
@@ -332,8 +330,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
                 (javax.swing.table.AbstractTableModel)transactionTable.getModel();
         model.fireTableDataChanged();
         model.fireTableStructureChanged();
-        
-        
     }
 
     @Override
