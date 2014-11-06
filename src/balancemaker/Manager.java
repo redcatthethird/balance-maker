@@ -5,41 +5,45 @@ package balancemaker;
  * @author Red
  */
 import java.util.*;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 public class Manager{
-    private static ArrayList<Transaction> _transactions = new ArrayList<>();
-    private static ArrayList<Buyer> _buyers = new ArrayList<>();
+    public static ArrayList<Transaction> transactions = new ArrayList<>();
+    public static ArrayList<Buyer> buyers = new ArrayList<>();
+    private static final BinaryOperator<Float> sum = (x, y) -> x + y;
     
     public static void addTransaction(Transaction t) {
-        _transactions.add(t);
+        transactions.add(t);
     }
     public static void appendTransactionList(ArrayList<Transaction> tList){
-        _transactions.addAll(tList);
+        transactions.addAll(tList);
     }
     // The list of Buyers should be updated after removing any Transaction.
     public static void removeTransaction(int tIndex) {
-        _transactions.remove(tIndex);
+        transactions.remove(tIndex);
     }
     public static void addBuyer(Buyer b) {
-        if (!_buyers.contains(b))
-            _buyers.add(b);
+        if (!buyers.contains(b))
+            buyers.add(b);
     }
     public static Iterator<Transaction> getTransactionsIterator() {
-        return _transactions.iterator();
+        return transactions.iterator();
     }
     public static Iterator<Buyer> getBuyersIterator() {
-        return _buyers.iterator();
+        return buyers.iterator();
     }
-    public static int getTransactionsNumber() { return _transactions.size(); }
-    public static int getBuyersNumber() { return _buyers.size(); }
+    public static int getTransactionsNumber() { return transactions.size(); }
+    public static int getBuyersNumber() { return buyers.size(); }
     public static Transaction getTransaction(int index) {
-        return _transactions.get(index);
+        return transactions.get(index);
     }
     // The index will correspond to the Buyer's id.
-    public static Buyer getBuyer(int index) { return _buyers.get(index); }
+    public static Buyer getBuyer(int index) { return buyers.get(index); }
     
     public static ArrayList<Transaction> getTransactionsFromBuyer(Buyer b) {
         ArrayList<Transaction> tList = new ArrayList<>();
-        for (Transaction t: _transactions)
+        for (Transaction t: transactions)
             if (t.getBuyer().equals(b))
                 tList.add(t);
         return tList;
@@ -47,36 +51,29 @@ public class Manager{
     
     // Returns the amount b should pay.
     public static float getDebts(Buyer b) {
-        float debt = 0f;
-        for (Transaction t : _transactions)
-            if (!t.getBuyer().equals(b))
-                debt += t.getDebtFromBuyer(b).getAmount();
-        return debt;
+        return transactions.stream().filter((t) -> (!t.getBuyer().equals(b)))
+                .map((t) -> t.getDebtFromBuyer(b)).reduce(0f, sum);
     }
     // Returns the amount b should receive.
     public static float getDebtsTo(Buyer b) {
         float debt = 0f;
-        for (Transaction t : _transactions)
+        for (Transaction t : transactions)
             if (t.getBuyer().equals(b))
-                for (Iterator it = t.getDebtsIterator(); it.hasNext();) {
-                    Transaction.Debt next = (Transaction.Debt)it.next();
-                    debt += next.getAmount();
-                }
+                debt += t.getDebtList().stream()
+                        .map(Transaction.Debt::getAmount)
+                        .reduce(0f, sum);
         return debt;
     }
     // Returns the amount b should receive.
     public static float getDebtsTo(Buyer b1, Buyer b2) {
-        float debt = 0f;
-        for (Transaction t : _transactions)
-            if (t.getBuyer().equals(b2))
-                debt += t.getDebtFromBuyer(b1).getAmount();
-        return debt;
+        return transactions.stream().filter((t) -> (t.getBuyer().equals(b2)))
+                .map((t) -> t.getDebtFromBuyer(b1)).reduce(0f, sum);
     }
-    
+    /*
     // Returns the amount spent by b.
     public static float getAmountSpent(Buyer b) {
         float amount = 0f;
-        for (Transaction t : _transactions)
+        for (Transaction t : transactions)
             if (t.getBuyer().equals(b))
                 amount += t.getAmount();
         return amount;
@@ -84,7 +81,7 @@ public class Manager{
     // Returns the amount spent by b after d.
     public static float getAmountSpent(Buyer b, Date d) {
         float amount = 0f;
-        for (Transaction t : _transactions)
+        for (Transaction t : transactions)
             if (t.getBuyer().equals(b) && t.getDate().compareTo(d) > 0)
                 amount += t.getAmount();
         return amount;
@@ -92,7 +89,7 @@ public class Manager{
     // Returns the amount spent by b between d1 and d2.
     public static float getAmountSpent(Buyer b, Date d1, Date d2) {
         float amount = 0f;
-        for (Transaction t : _transactions)
+        for (Transaction t : transactions)
             if(t.getBuyer().equals(b) && t.getDate().compareTo(d1)>0 
                     && t.getDate().compareTo(d2)<0)
                 amount += t.getAmount();
@@ -101,27 +98,24 @@ public class Manager{
     // Returns the amount spent by b at store.
     public static float getAmountSpent(Buyer b, String store) {
         float amount = 0f;
-        for (Transaction t : _transactions)
+        for (Transaction t : transactions)
             if(t.getBuyer().equals(b) && t.getStore().equals(store))
                 amount += t.getAmount();
         return amount;
-    }
+    }*/
     
-    // This will populate the _buyers list with all _buyers referenced.
+    // This will populate the buyers list with all buyers referenced
+    // and will remove any duplicate buyers.
     public static void updateBuyers() {
         //addBuyer(Buyer.none);
-        _buyers.clear();
-        for (Transaction t : _transactions) {
+        buyers.clear();
+        for (Transaction t : transactions) {
             addBuyer(t.getBuyer());
-            for (Iterator<Transaction.Debt> it = t.getDebtsIterator(); it.hasNext();) {
-                Transaction.Debt next = it.next();
-                addBuyer(next.getDebtor());
-            }
+            t.getDebtList().forEach((d) -> addBuyer(d.getDebtor()));
         }
-        _buyers.sort((Buyer o1, Buyer o2) -> o1.getId() - o2.getId());
-        
-        
+        buyers = buyers.stream()
+                .sorted((Buyer o1, Buyer o2) -> o1.getId() - o2.getId())
+                .distinct()
+                .collect(ArrayList<Buyer>::new, ArrayList<Buyer>::add, ArrayList<Buyer>::addAll);
     }
-    
-    // TODO: Lambdas
 }

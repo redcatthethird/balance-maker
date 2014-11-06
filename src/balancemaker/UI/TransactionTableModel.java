@@ -46,7 +46,7 @@ public class TransactionTableModel extends AbstractTableModel {
             }
         else {
             Buyer b = Manager.getBuyer(columnIndex - MIN_COLS);
-            return t.getDebtFromBuyer(b).getAmount();
+            return t.getDebtFromBuyer(b);
         }
     }
     

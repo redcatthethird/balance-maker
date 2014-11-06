@@ -2,7 +2,7 @@ package balancemaker;
 
 import java.util.*;
 
-public final class Transaction extends IdentifiableInstanceManager {
+public final class Transaction extends Identifiable {
     private final String store;
     private final Date date;
     private final String receipt;
@@ -11,18 +11,19 @@ public final class Transaction extends IdentifiableInstanceManager {
     private final boolean payback;
     private final ArrayList<Debt> debts;
     
-    // TODO: Remove getters, make variables public final and refactor code. For all my immutable classes.
 
     /**
+     * For private use, thus package private.
      * Immutable.
      */
     public final static class Debt {
+        public final static Debt nullDebt = new Debt(null);
         private final float amount;
         private final Buyer debtor;
         // Transaction.this.buyer
 
-        public Debt(Buyer debtor) { this(0f, debtor); }
-        public Debt(float amount, Buyer debtor) {
+        Debt(Buyer debtor) { this(0f, debtor); }
+        Debt(float amount, Buyer debtor) {
             this.amount = amount;
             this.debtor = debtor;
         }
@@ -32,8 +33,8 @@ public final class Transaction extends IdentifiableInstanceManager {
         //public Buyer getLender() { return Transaction.this.buyer; }
     }
 
-    public Transaction(String store, String receipt, Date date, float amount,
-        Buyer buyer, boolean payback, ArrayList<Debt> debts) {
+    Transaction(String store, String receipt, Date date, float amount,
+        Buyer buyer, boolean payback, List<Debt> debts) {
             super();
             this.store = store;
             this.receipt = receipt;
@@ -44,8 +45,7 @@ public final class Transaction extends IdentifiableInstanceManager {
             this.debts = new ArrayList<>(debts);
             
             // If there is a non-null debt to oneself
-            if (getDebtFromBuyer(buyer).getAmount() > 0.009)
-                // throw a bloody exception.
+            if (getDebtFromBuyer(buyer) > 0.009)
                 throw new IllegalArgumentException("Non-null debt to oneself.");
         }
 
@@ -56,8 +56,8 @@ public final class Transaction extends IdentifiableInstanceManager {
     public Buyer getBuyer(){ return buyer; }
     public boolean isPayback(){ return payback; }
     // I wish Iterators couldn't remove things. I really do.
-    public Iterator<Debt> getDebtsIterator(){ return debts.iterator(); }
-    public Debt getDebt(int index) { return debts.get(index); }
+    public List<Debt> getDebtList() { return Collections.unmodifiableList(debts); }
+    public float getDebt(int index) { return debts.get(index).amount; }
     
     @Override
     public String toString() {
@@ -75,14 +75,14 @@ public final class Transaction extends IdentifiableInstanceManager {
     }
     
     
-    public Debt getDebtFromBuyer(Buyer b) {
-        for (Debt d : debts)
+    public float getDebtFromBuyer(Buyer b) {
+        for (Debt d : debts) {
             if (d.debtor == b)
-                return d;
-        return new Debt(b);
+                return d.amount;
+        }
+        return 0;
     }
-    
-    public float getTotalDebt() {
+    /*public float getTotalDebt() {
         float debt = 0f;
         for (Debt d : debts)
             debt += d.amount;
@@ -93,5 +93,5 @@ public final class Transaction extends IdentifiableInstanceManager {
         for (Debt d : debts)
             debtors.add(d.debtor);
         return debtors;
-    }
+    }*/
 }

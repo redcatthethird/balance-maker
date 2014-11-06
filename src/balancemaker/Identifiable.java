@@ -5,19 +5,15 @@
  */
 package balancemaker;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 
  * @author Red
  */
-public abstract class IdentifiableInstanceManager {
+public abstract class Identifiable {
     protected static int ID = 0;
     protected final int id;
     
-    public IdentifiableInstanceManager() {
+    public Identifiable() {
         this.id = ++ID;
     }
     
@@ -37,14 +33,7 @@ public abstract class IdentifiableInstanceManager {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final IdentifiableInstanceManager other = (IdentifiableInstanceManager) obj;
+        final Identifiable other = (Identifiable) obj;
         return this.id == other.id;
     }
-    
-    
-    
-    protected static ArrayList<? extends IdentifiableInstanceManager> list = new ArrayList<>();
-    protected static Map<Class, ArrayList<?>> map = new HashMap<>();
-    
-    //TODO: Implement InstanceManager functionality here and remove it from Manager
 }
