@@ -38,7 +38,7 @@ public class Manager{
     }
     // Returns the amount b should receive.
     public float getDebtsTo(Buyer b1, Buyer b2) {
-        return transactions.stream().filter((t) -> (t.getBuyer().equals(b2)))
+        return transactions.stream().filter(t -> (t.getBuyer().equals(b2)))
                 .map((t) -> t.getDebtFromBuyer(b1)).reduce(0f, sum);
     }
     /*
@@ -83,7 +83,7 @@ public class Manager{
         buyers.clear();
         for (Transaction t : transactions) {
             temp.add(t.getBuyer());
-            t.getDebtList().forEach((d) -> temp.add(d.getDebtor()));
+            t.getDebtList().forEach(d -> temp.add(d.getDebtor()));
         }
         buyers.addAll(
                 temp.stream().distinct()

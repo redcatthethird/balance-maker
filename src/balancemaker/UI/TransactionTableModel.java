@@ -8,22 +8,27 @@ package balancemaker.UI;
 import balancemaker.Buyer;
 import balancemaker.Transaction;
 import balancemaker.Manager;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javax.swing.table.AbstractTableModel;
 
 /**
  *
  * @author Red
  */
-public class TransactionTableModel extends AbstractTableModel {
+public class TransactionTableModel extends AbstractTableModel implements InvalidationListener {
     private final int MIN_COLS = 7;
     private final String[] columnNames = { "Id", "Store", "Date", "Receipt",
         "Amount", "Buyer", "Payback"};
     
     private Manager manager;
     
-    public TransactionTableModel(Manager manager) throws IllegalArgumentException {
-        if (manager == null) throw new IllegalArgumentException("Manager cannot be null.");
+    public TransactionTableModel(Manager manager)
+            throws IllegalArgumentException {
+        if (manager == null)
+            throw new IllegalArgumentException("Manager cannot be null.");
         this.manager = manager;
+        manager.transactions.addListener(this);
     }
     
     @Override
@@ -69,5 +74,11 @@ public class TransactionTableModel extends AbstractTableModel {
     public void removeRow(int rowIndex) { manager.transactions.remove(rowIndex); }
     public void removeRows(int rowStartIndex, int rowEndIndex) {
         manager.transactions.remove(rowStartIndex, rowEndIndex);
+    }
+
+    @Override
+    public void invalidated(Observable observable) {
+        this.fireTableDataChanged();
+        this.fireTableStructureChanged();
     }
 }

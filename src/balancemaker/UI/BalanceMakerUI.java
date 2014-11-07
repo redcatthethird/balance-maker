@@ -12,6 +12,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Iterator;
+import javafx.collections.ListChangeListener;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
@@ -187,7 +188,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
             .addDebt(35f, Andrei).addDebt(39f, Catalin).createTransaction());*/
         
         
-        fireTableChanged();
         updateDebtLabel(null);
     }                                           
 
@@ -198,30 +198,25 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (javax.swing.UIManager.LookAndFeelInfo info :
+                    javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(BalanceMakerUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(BalanceMakerUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(BalanceMakerUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(BalanceMakerUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException |
+                IllegalAccessException |
+                javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(BalanceMakerUI.class.getName())
+                    .log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
-        /* Create and display the form 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new BalanceMakerUI().setVisible(true);
-            }
-        });*/
-        new BalanceMakerUI().setVisible(true);
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            new BalanceMakerUI().setVisible(true);
+        });
     }
 
     // <editor-fold defaultstate="collapsed" desc="Form Components">
@@ -256,16 +251,23 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
             if (e.getStateChange() == ItemEvent.SELECTED)
                 syncBuyerComboBox(buyerLeft, (Buyer)e.getItem());
         });
+        manager.buyers.addListener((ListChangeListener.Change<? extends Buyer> c) -> {
+            if (c.getRemoved().contains((Buyer)buyerLeft.getSelectedItem()))
+                deselBuyerComboBox(buyerLeft, false);
+            if (c.getRemoved().contains((Buyer)buyerRight.getSelectedItem()))
+                deselBuyerComboBox(buyerRight, false);
+            
+            syncBuyerComboBox(buyerLeft, (Buyer)buyerRight.getSelectedItem());
+            syncBuyerComboBox(buyerRight, (Buyer)buyerLeft.getSelectedItem());
+        });
         
-        ((DisplayBuyerComboBoxModel)buyerLeft.getModel()).setSelectedItem(Buyer.none, false);
-        ((DisplayBuyerComboBoxModel)buyerRight.getModel()).setSelectedItem(Buyer.none, false);
+        deselBuyerComboBox(buyerLeft, true); deselBuyerComboBox(buyerRight, true);
         
         updateDebtLabel(null);
     }
     
     // Rebuilds the given JComboBox list, removing the given Buyer
     public void syncBuyerComboBox(JComboBox cbx, Buyer otherSelBuyer) {
-        if (cbx == null || otherSelBuyer == null) return;
         DisplayBuyerComboBoxModel model = (DisplayBuyerComboBoxModel)cbx.getModel();
         Object sel = model.getSelectedItem();
         model.removeAllElements();
@@ -274,10 +276,13 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
             model.addElement(b, false);
         
         // If a Buyer other than Buyer.none was selected, remove it from here.
-        if (!otherSelBuyer.equals(Buyer.none))
-            model.removeElement(otherSelBuyer);
+        if (!otherSelBuyer.equals(Buyer.none)) model.removeElement(otherSelBuyer);
         
         model.setSelectedItem(sel, false);
+    }
+    private void deselBuyerComboBox(JComboBox cbx, boolean fireChanges) {
+        ((DisplayBuyerComboBoxModel)cbx.getModel())
+                .setSelectedItem(Buyer.none, fireChanges);
     }
     private void updateDebtLabel(java.awt.event.ItemEvent e) {
         Buyer l = (Buyer)buyerLeft.getSelectedItem(); if(l==null) return;
@@ -312,18 +317,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
         manager.transactions.add(new TransactionBuilder().Store("Sainsbury's")
             .Amount(13f).Buyer(Andu).addDebt(6f, Ciupi).addDebt(3f, Claudiu)
             .Receipt("Ghici").Payback(true).createTransaction());
-        
-        fireTableChanged();
-    }
-    public void fireTableChanged() {
-        // TODO: Get rid of this effectively.
-        syncBuyerComboBox(buyerLeft,  Buyer.none);
-        syncBuyerComboBox(buyerRight, Buyer.none);
-        
-        javax.swing.table.AbstractTableModel model =
-                (javax.swing.table.AbstractTableModel)transactionTable.getModel();
-        model.fireTableDataChanged();
-        model.fireTableStructureChanged();
     }
 
     @Override
@@ -349,7 +342,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
             if (n == JOptionPane.YES_OPTION)
                 ((TransactionTableModel)transactionTable.getModel()).removeRows(
                     selRow, selRow+selRowCount);
-            fireTableChanged();
             updateDebtLabel(null);
         }
     }
