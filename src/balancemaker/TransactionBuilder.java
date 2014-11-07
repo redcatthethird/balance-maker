@@ -50,8 +50,8 @@ public class TransactionBuilder {
     public Transaction createTransaction() throws IllegalStateException {
         if (store == null || store.isEmpty())
             throw new IllegalStateException("Store is empty or null");
-        if (buyer == null || !buyer.isValid())
-            throw new IllegalStateException("Buyer is null or invalid");
+        if (buyer == null)
+            throw new IllegalStateException("Buyer is null");
         if (amount == Float.NaN || amount < 0f)
             throw new IllegalStateException("Float is NaN or less than 0");
         

@@ -19,14 +19,21 @@ public class TransactionTableModel extends AbstractTableModel {
     private final String[] columnNames = { "Id", "Store", "Date", "Receipt",
         "Amount", "Buyer", "Payback"};
     
+    private Manager manager;
+    
+    public TransactionTableModel(Manager manager) throws IllegalArgumentException {
+        if (manager == null) throw new IllegalArgumentException("Manager cannot be null.");
+        this.manager = manager;
+    }
+    
     @Override
-    public int getRowCount() { return Manager.transactions.size(); }
+    public int getRowCount() { return manager.transactions.size(); }
     @Override
-    public int getColumnCount() { return MIN_COLS + Manager.buyers.size(); }
+    public int getColumnCount() { return MIN_COLS + manager.buyers.size(); }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Transaction t = Manager.transactions.get(rowIndex);
+        Transaction t = manager.transactions.get(rowIndex);
         if (columnIndex < MIN_COLS)
             switch (columnIndex) {
                 case 0: return t.getId();
@@ -39,7 +46,7 @@ public class TransactionTableModel extends AbstractTableModel {
                 default: return null;
             }
         else {
-            Buyer b = Manager.buyers.get(columnIndex - MIN_COLS);
+            Buyer b = manager.buyers.get(columnIndex - MIN_COLS);
             return t.getDebtFromBuyer(b);
         }
     }
@@ -48,7 +55,7 @@ public class TransactionTableModel extends AbstractTableModel {
         if (columnIndex < MIN_COLS) {
             return columnNames[columnIndex];
         } else {
-            return Manager.buyers.get(columnIndex - MIN_COLS).getName();
+            return manager.buyers.get(columnIndex - MIN_COLS).getName();
         }
     }
     @Override
@@ -59,8 +66,8 @@ public class TransactionTableModel extends AbstractTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) { return false; }
     
     
-    public void removeRow(int rowIndex) { Manager.transactions.remove(rowIndex); }
+    public void removeRow(int rowIndex) { manager.transactions.remove(rowIndex); }
     public void removeRows(int rowStartIndex, int rowEndIndex) {
-        Manager.transactions.remove(rowStartIndex, rowEndIndex);
+        manager.transactions.remove(rowStartIndex, rowEndIndex);
     }
 }
