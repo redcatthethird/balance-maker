@@ -332,6 +332,4 @@ public class BalanceMakerUI extends javax.swing.JFrame{
                     selRow, selRow+selRowCount);
         }
     }
-    
-    // TODO: Try to translate everything to Groovy.
 }
