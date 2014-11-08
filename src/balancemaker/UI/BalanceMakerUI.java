@@ -178,7 +178,7 @@ public class BalanceMakerUI extends javax.swing.JFrame{
         if (evt.getKeyCode() == KeyEvent.VK_DELETE) removeSelectedTransactions();
     }//GEN-LAST:event_transactionTableKeyPressed
     private void addTransactionMouseClicked(MouseEvent evt) {                                            
-        AddTransactionDialog dlg = new AddTransactionDialog(this, true);
+        AddTransactionDialog dlg = new AddTransactionDialog(this, true, manager);
         dlg.setVisible(true);
         
         /*Buyer Catalin = new Buyer("Cătălin");

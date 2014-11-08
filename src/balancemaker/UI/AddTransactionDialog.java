@@ -31,7 +31,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                     BorderFactory.createLineBorder(Color.RED, 2), defaultTextFieldBorder);
     
     private final Map<JTextField, Predicate<String>> fieldValidators = new HashMap<>(3);
-    
+    private BooleanPropertyBase fieldsAreValid = new SimpleBooleanProperty(true);
     private final DocumentListener textChangeListener = new DocumentListener() {
         @Override
         public void changedUpdate(DocumentEvent e) { validateFields(); }
@@ -41,14 +41,15 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         public void insertUpdate(DocumentEvent e) { validateFields(); }
     };
     
-    private BooleanPropertyBase fieldsValid = new SimpleBooleanProperty(true);
+    private final Manager manager;
 
     /**
      * Creates new form AddTransactionDialog
      * @param parent
      * @param modal
+     * @param manager
      */
-    public AddTransactionDialog(java.awt.Frame parent, boolean modal) {
+    public AddTransactionDialog(java.awt.Frame parent, boolean modal, Manager manager) {
         super(parent, modal);
         initComponents();
         
@@ -60,17 +61,18 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, amountTextBox);
         
         fieldValidators.put(storeTextBox, AddTransactionDialog::isNotEmpty);
-        fieldValidators.put(receiptTextBox, AddTransactionDialog::isNotEmpty);
         fieldValidators.put(amountTextBox, AddTransactionDialog::isValidFloat);
         
         for (JTextField tf : fieldValidators.keySet())
             tf.getDocument().addDocumentListener(textChangeListener);
         
-        fieldsValid.addListener((o) -> saveButton.setEnabled(fieldsValid.get()));
+        fieldsAreValid.addListener((o) -> saveButton.setEnabled(fieldsAreValid.get()));
         
-        this.fieldsValid.set(false);
+        this.fieldsAreValid.set(false);
         
         validateFields();
+        
+        this.manager = manager;
     }
 
     @SuppressWarnings("unchecked")
@@ -168,16 +170,19 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cancelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelButtonMouseClicked
-        System.exit(0);
+        dispose();
     }//GEN-LAST:event_cancelButtonMouseClicked
 
     private void saveButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseClicked
-        /*Manager.transactions.add(new Transaction(storeTextBox.getText(),
-                receiptTextBox.getText(), Date.from(Instant.now()),
-                Float.valueOf(amountTextBox.getText()),
-                Buyer.none, true, null));*/
-        
-        //TODO: Validate fields before saving.
+        manager.transactions.add(new TransactionBuilder()
+                .Store(storeTextBox.getText())
+                .Receipt(receiptTextBox.getText())
+                .Date(Date.from(Instant.now()))
+                .Amount(Float.valueOf(amountTextBox.getText()))
+                .Payback(paybackCheckBox.isSelected())
+                .Buyer(manager.buyers.get(0))
+                .createTransaction());
+        dispose();
     }//GEN-LAST:event_saveButtonMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -200,7 +205,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
             Border border = b ? defaultTextFieldBorder : invalidTextFieldBorder;
             e.getKey().setBorder(border);
         }
-        fieldsValid.set(v);
+        fieldsAreValid.set(v);
     }
     
     private static boolean isNotEmpty(String text) { return !text.isEmpty(); }
@@ -212,4 +217,6 @@ public class AddTransactionDialog extends javax.swing.JDialog {
             return false;
         }
     }
+    
+    // TODO: Implement buyer and debtor selection.
 }

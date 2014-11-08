@@ -11,7 +11,6 @@ public final class Transaction extends Identifiable {
     private final boolean payback;
     private final ArrayList<Debt> debts;
     
-
     /**
      * For private use, thus package private.
      * Immutable.
@@ -20,7 +19,6 @@ public final class Transaction extends Identifiable {
         public final static Debt nullDebt = new Debt(null);
         private final float amount;
         private final Buyer debtor;
-        // Transaction.this.buyer
 
         Debt(Buyer debtor) { this(0f, debtor); }
         Debt(float amount, Buyer debtor) {
@@ -30,7 +28,6 @@ public final class Transaction extends Identifiable {
 
         public float getAmount(){ return amount; }
         public Buyer getDebtor(){ return debtor; }
-        //public Buyer getLender() { return Transaction.this.buyer; }
     }
 
     Transaction(String store, String receipt, Date date, float amount,
@@ -55,9 +52,8 @@ public final class Transaction extends Identifiable {
     public float getAmount(){ return amount; }
     public Buyer getBuyer(){ return buyer; }
     public boolean isPayback(){ return payback; }
-    // I wish Iterators couldn't remove things. I really do.
+    
     public List<Debt> getDebtList() { return Collections.unmodifiableList(debts); }
-    public float getDebt(int index) { return debts.get(index).amount; }
     
     @Override
     public String toString() {
@@ -94,4 +90,6 @@ public final class Transaction extends Identifiable {
             debtors.add(d.debtor);
         return debtors;
     }*/
+    
+    // TODO: For the sake of sake, get some databases in here. Please.
 }

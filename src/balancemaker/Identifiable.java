@@ -10,6 +10,8 @@ package balancemaker;
  * @author Red
  */
 public abstract class Identifiable {
+    // TODO: Fix unique id problem.
+    
     protected static int ID = 0;
     protected final int id;
     
