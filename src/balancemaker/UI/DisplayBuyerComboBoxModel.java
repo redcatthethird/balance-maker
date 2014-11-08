@@ -17,6 +17,7 @@ import javax.swing.MutableComboBoxModel;
 public class DisplayBuyerComboBoxModel
         extends AbstractListModel<Buyer> implements MutableComboBoxModel<Buyer>{
    // TODO: Eventually redo this whole model.
+    // TODO: Also, invent some sort of exclusive selection list system.
     
     Vector<Buyer> objects;
     Object selectedObject;

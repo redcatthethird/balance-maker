@@ -5,13 +5,8 @@
 */
 package balancemaker.UI;
 
-import balancemaker.Buyer;
-import balancemaker.TransactionBuilder;
-import balancemaker.Manager;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Iterator;
+import balancemaker.*;
+import java.awt.event.*;
 import javafx.collections.ListChangeListener;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -20,7 +15,7 @@ import javax.swing.JOptionPane;
  *
  * @author Red
  */
-public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
+public class BalanceMakerUI extends javax.swing.JFrame{
     private final Manager manager = new Manager();
         
     /**
@@ -131,6 +126,11 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
         transactionTable.setModel(new TransactionTableModel(manager));
         transactionTable.setName(""); // NOI18N
         transactionTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        transactionTable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                transactionTableKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(transactionTable);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -174,8 +174,10 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
     private void removeTransactionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeTransactionMouseClicked
         removeSelectedTransactions();
     }//GEN-LAST:event_removeTransactionMouseClicked
-
-    private void addTransactionMouseClicked(java.awt.event.MouseEvent evt) {                                            
+    private void transactionTableKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_transactionTableKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_DELETE) removeSelectedTransactions();
+    }//GEN-LAST:event_transactionTableKeyPressed
+    private void addTransactionMouseClicked(MouseEvent evt) {                                            
         AddTransactionDialog dlg = new AddTransactionDialog(this, true);
         dlg.setVisible(true);
         
@@ -186,9 +188,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
         Manager.addTransaction(new TransactionBuilder().Store("Pe stradă, în cartier")
             .Receipt("Iarbă, bere, tutun și alte alea").Amount(103f).Buyer(Iustin)
             .addDebt(35f, Andrei).addDebt(39f, Catalin).createTransaction());*/
-        
-        
-        updateDebtLabel(null);
     }                                           
 
     public static void main(String args[]) {
@@ -252,18 +251,18 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
                 syncBuyerComboBox(buyerLeft, (Buyer)e.getItem());
         });
         manager.buyers.addListener((ListChangeListener.Change<? extends Buyer> c) -> {
-            if (c.getRemoved().contains((Buyer)buyerLeft.getSelectedItem()))
-                deselBuyerComboBox(buyerLeft, false);
-            if (c.getRemoved().contains((Buyer)buyerRight.getSelectedItem()))
-                deselBuyerComboBox(buyerRight, false);
+            while (c.next()) {
+                if (c.getRemoved().contains((Buyer)buyerLeft.getSelectedItem()))
+                    deselBuyerComboBox(buyerLeft, false);
+                if (c.getRemoved().contains((Buyer)buyerRight.getSelectedItem()))
+                    deselBuyerComboBox(buyerRight, false);
             
-            syncBuyerComboBox(buyerLeft, (Buyer)buyerRight.getSelectedItem());
-            syncBuyerComboBox(buyerRight, (Buyer)buyerLeft.getSelectedItem());
+                syncBuyerComboBox(buyerLeft, (Buyer)buyerRight.getSelectedItem());
+                syncBuyerComboBox(buyerRight, (Buyer)buyerLeft.getSelectedItem());
+            }
         });
         
         deselBuyerComboBox(buyerLeft, true); deselBuyerComboBox(buyerRight, true);
-        
-        updateDebtLabel(null);
     }
     
     // Rebuilds the given JComboBox list, removing the given Buyer
@@ -279,6 +278,7 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
         if (!otherSelBuyer.equals(Buyer.none)) model.removeElement(otherSelBuyer);
         
         model.setSelectedItem(sel, false);
+        updateDebtLabel(null);
     }
     private void deselBuyerComboBox(JComboBox cbx, boolean fireChanges) {
         ((DisplayBuyerComboBoxModel)cbx.getModel())
@@ -319,18 +319,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
             .Receipt("Ghici").Payback(true).createTransaction());
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) { }
-    @Override
-    public void keyPressed(KeyEvent e) {
-        //if (e.getKeyCode() == KeyEvent.VK_DELETE)
-        //    removeSelectedTransactions();
-        // TODO: Handle Del keypress.
-        System.out.println(e.getKeyCode());
-    }
-    @Override
-    public void keyReleased(KeyEvent e) { }
-
     private void removeSelectedTransactions() {
         int selRowCount = transactionTable.getSelectedRowCount();
         int selRow      = transactionTable.getSelectedRow();
@@ -342,7 +330,6 @@ public class BalanceMakerUI extends javax.swing.JFrame implements KeyListener {
             if (n == JOptionPane.YES_OPTION)
                 ((TransactionTableModel)transactionTable.getModel()).removeRows(
                     selRow, selRow+selRowCount);
-            updateDebtLabel(null);
         }
     }
     
