@@ -21,6 +21,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
+import javax.swing.MutableComboBoxModel;
 
 /**
  * For PREVENTING_INVALIDITY
@@ -103,7 +104,7 @@ public class XclusionSystem<U> implements ItemListener, ListChangeListener<U> {
             if (index == 0) return defaultValue;
             else return selectables.entrySet().stream()
                     .filter(e -> e.getValue() == 0 || e.getKey().equals(selectedItem))
-                    .map(e -> e.getKey()).collect(Collectors.toList()).get(index);
+                    .map(e -> e.getKey()).collect(Collectors.toList()).get(index-1);
         }
 
         @Override
@@ -121,7 +122,7 @@ public class XclusionSystem<U> implements ItemListener, ListChangeListener<U> {
                     fireOnSelection();
             }
         }
-        public void setSelectedItem() { setSelectedItem(defaultValue); }
+        public void setSelectedItem() { setSelectedItem(defaultValue); fireContentsChanged(); }
         @Override
         public Object getSelectedItem() { return selectedItem; }
 
