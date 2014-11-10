@@ -9,8 +9,6 @@ import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +19,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
-import javax.swing.MutableComboBoxModel;
 
 /**
  * For PREVENTING_INVALIDITY
