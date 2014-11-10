@@ -6,10 +6,14 @@
 package balancemaker.UI;
 
 import balancemaker.*;
+import ca.odell.glazedlists.gui.TableFormat;
 import java.awt.event.*;
 import javafx.collections.ListChangeListener;
+import ca.odell.glazedlists.swing.DefaultEventTableModel;
+import ca.odell.glazedlists.swing.GlazedListsSwing;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.table.AbstractTableModel;
 
 /**
  *
@@ -123,7 +127,14 @@ public class BalanceMakerUI extends javax.swing.JFrame{
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        transactionTable.setModel(new TransactionTableModel(manager));
+        transactionTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
         transactionTable.setName(""); // NOI18N
         transactionTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         transactionTable.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -239,6 +250,15 @@ public class BalanceMakerUI extends javax.swing.JFrame{
     
     private void postInit() {
         populateList();
+        
+        transactionTable.setModel(
+                GlazedListsSwing.eventTableModelWithThreadProxyList(
+                        manager.transactions,
+                        new TransactionTableFormat(manager.buyers)));
+        manager.buyers.addListEventListener(e ->
+                ((AbstractTableModel)transactionTable.getModel())
+                        .fireTableStructureChanged());
+        
         buyerLeft.addItemListener(this::updateDebtLabel);
         buyerRight.addItemListener(this::updateDebtLabel);
         
@@ -250,7 +270,20 @@ public class BalanceMakerUI extends javax.swing.JFrame{
             if (e.getStateChange() == ItemEvent.SELECTED)
                 syncBuyerComboBox(buyerLeft, (Buyer)e.getItem());
         });
-        manager.buyers.addListener((ListChangeListener.Change<? extends Buyer> c) -> {
+        
+        
+        
+        
+        Buyer Catalin = new Buyer("Cătălin");
+        Buyer Andrei = new Buyer("Andrei");
+        Buyer Iustin = new Buyer("Iustin");
+        Transaction t = new TransactionBuilder().Store("Pe stradă, în cartier")
+            .Receipt("Iarbă, bere, tutun și alte alea").Amount(103f).Buyer(Iustin)
+            .addDebt(35f, Andrei).addDebt(39f, Catalin).createTransaction();
+        manager.transactions.add(t);
+        
+        
+        /*manager.buyers.addListEventListener((ListChangeListener.Change<? extends Buyer> c) -> {
             while (c.next()) {
                 if (c.getRemoved().contains((Buyer)buyerLeft.getSelectedItem()))
                     deselBuyerComboBox(buyerLeft, false);
@@ -260,7 +293,7 @@ public class BalanceMakerUI extends javax.swing.JFrame{
                 syncBuyerComboBox(buyerLeft, (Buyer)buyerRight.getSelectedItem());
                 syncBuyerComboBox(buyerRight, (Buyer)buyerLeft.getSelectedItem());
             }
-        });
+        });*/
         
         deselBuyerComboBox(buyerLeft, true); deselBuyerComboBox(buyerRight, true);
     }
@@ -328,8 +361,8 @@ public class BalanceMakerUI extends javax.swing.JFrame{
                     "Insurance query", JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (n == JOptionPane.YES_OPTION)
-                ((TransactionTableModel)transactionTable.getModel()).removeRows(
-                    selRow, selRow+selRowCount);
+                for (int i = 0; i < selRowCount; i++)
+                    manager.transactions.remove(selRow);
         }
     }
 }

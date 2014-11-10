@@ -28,7 +28,7 @@ public class TransactionTableModel extends AbstractTableModel implements Invalid
         if (manager == null)
             throw new IllegalArgumentException("Manager cannot be null.");
         this.manager = manager;
-        manager.transactions.addListener(this);
+        //manager.transactions.addListener(this);
     }
     
     @Override
@@ -73,7 +73,9 @@ public class TransactionTableModel extends AbstractTableModel implements Invalid
     
     public void removeRow(int rowIndex) { manager.transactions.remove(rowIndex); }
     public void removeRows(int rowStartIndex, int rowEndIndex) {
-        manager.transactions.remove(rowStartIndex, rowEndIndex);
+        for (int i = rowStartIndex; i <= rowEndIndex; i++)
+            manager.transactions.remove(i);
+        //manager.transactions.remove(rowStartIndex, rowEndIndex);
     }
 
     @Override

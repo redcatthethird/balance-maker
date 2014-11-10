@@ -5,6 +5,10 @@
  */
 package balancemaker.UI.xclusion;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -32,23 +36,20 @@ import javax.swing.ComboBoxModel;
  * @author Red
  * @param <U>
  */
-public class XclusionSystem<U> implements ItemListener, ListChangeListener<U> {
+public class XclusionSystem<U> implements ItemListener, ListEventListener<U> {
     private final U defaultValue;
     private final Map<U, Byte> selectables;
     private final Map<Byte, XclusionListModel> listModels;
     private Byte count = 0;
     
-    public XclusionSystem(U defaultValue) {
-        this(defaultValue, FXCollections.emptyObservableList());
-    }
-    public XclusionSystem(U defaultValue, ObservableList<U> selectableCollection) {
+    public XclusionSystem(U defaultValue, EventList<U> selectableCollection) {
         this.defaultValue = defaultValue;
         this.listModels = new TreeMap<>();
         
         selectables = new LinkedHashMap<>();
         for (U t : selectableCollection) selectables.putIfAbsent(t, (byte)0);
         
-        selectableCollection.addListener(this);
+        selectableCollection.addListEventListener(this);
     }
 
     @Override
@@ -62,17 +63,17 @@ public class XclusionSystem<U> implements ItemListener, ListChangeListener<U> {
     }
 
     @Override
-    public void onChanged(Change<? extends U> c) {
-        while (c.next()) {
-            if (c.wasRemoved())
-                for (U u : c.getRemoved()) {
+    public void listChanged(ListEvent<U> listChanges) {
+        while (listChanges.next()) {
+            if (listChanges.isReordering()) continue;
+            if (listChanges.getType() == ListEvent.DELETE) {
+                U u = listChanges.getSourceList().get(listChanges.getIndex());
                     if (selectables.get(u) != 0)
                         listModels.get(selectables.get(u)).setSelectedItem();
                     selectables.remove(u);
-                }
-            if (c.wasAdded())
-                for (U u : c.getAddedSubList())
-                    selectables.put(u, (byte) 0);
+            }
+            if (listChanges.getType() == ListEvent.INSERT)
+                selectables.put(listChanges.getSourceList().get(listChanges.getIndex()), (byte) 0);
         }
         for (XclusionListModel lm : listModels.values())
             lm.fireContentsChanged();

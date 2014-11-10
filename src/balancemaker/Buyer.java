@@ -1,5 +1,7 @@
 package balancemaker;
 
+import java.util.Comparator;
+
 /**
  * Immutable.
  * @author Red
@@ -37,4 +39,6 @@ public final class Buyer extends Identifiable {
         return Manager.getAmountSpent(this, d1, d2);}
     public float getAmountSpent(String store){
         return Manager.getAmountSpent(this, store);}*/
+    
+    public static Comparator<Buyer> idComparator = Comparator.comparingInt(b -> b.id);
 }
