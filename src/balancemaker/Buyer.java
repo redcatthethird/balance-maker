@@ -6,22 +6,43 @@ import java.util.Comparator;
  * Immutable.
  * @author Red
  */
-public final class Buyer extends Identifiable {
-    private final String name;
-    
+public final class Buyer {
+    protected static int ID = -1;
     public static Buyer none = new Buyer("Anyone");
+    protected final String name;
+    protected final int id;
 
     public Buyer(String name) {
-        super();
+        this.id = ++ID;
         this.name = name;
     }
-
     public String getName() { return name; }
 
     @Override
-    public String toString() { return name; }
+    public String toString() { return toString(false); }
     public String toString(boolean verbose) {
-        return "Buyer{" + id + ": " + name + '}';
+        if (verbose) return "Buyer{" + id + ": " + name + '}';
+        else return name;
+    }
+    
+    public int getId() { return id; }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + this.id;
+        return hash;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Buyer other = (Buyer) obj;
+        return this.id == other.id;
     }
     
     // Shorthand forms for the Manager methods.

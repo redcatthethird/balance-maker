@@ -6,10 +6,7 @@
 package balancemaker.UI;
 
 import balancemaker.*;
-import ca.odell.glazedlists.gui.TableFormat;
 import java.awt.event.*;
-import javafx.collections.ListChangeListener;
-import ca.odell.glazedlists.swing.DefaultEventTableModel;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;

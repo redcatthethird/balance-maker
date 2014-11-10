@@ -2,14 +2,16 @@ package balancemaker;
 
 import java.util.*;
 
-public final class Transaction extends Identifiable {
-    private final String store;
-    private final Date date;
-    private final String receipt;
-    private final float amount;
-    private final Buyer buyer;
-    private final boolean payback;
-    private final ArrayList<Debt> debts;
+public final class Transaction {
+    protected static int ID = 0;
+    protected final int id;
+    protected final String store;
+    protected final Date date;
+    protected final String receipt;
+    protected final float amount;
+    protected final Buyer buyer;
+    protected final boolean payback;
+    protected final ArrayList<Debt> debts;
     
     /**
      * For private use, thus package private.
@@ -32,7 +34,7 @@ public final class Transaction extends Identifiable {
 
     Transaction(String store, String receipt, Date date, float amount,
         Buyer buyer, boolean payback, List<Debt> debts) {
-            super();
+            this.id = ++ID;
             this.store = store;
             this.receipt = receipt;
             this.date = date;
@@ -90,6 +92,26 @@ public final class Transaction extends Identifiable {
             debtors.add(d.debtor);
         return debtors;
     }*/
+    
+    public int getId() { return id; }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + this.id;
+        return hash;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Transaction other = (Transaction) obj;
+        return this.id == other.id;
+    }
     
     // TODO: For the sake of sake, get some databases in here. Please.
 }

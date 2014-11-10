@@ -7,9 +7,7 @@ package balancemaker.UI;
 
 import balancemaker.Buyer;
 import balancemaker.Transaction;
-import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
-import ca.odell.glazedlists.gui.TableFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
