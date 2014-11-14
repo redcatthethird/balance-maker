@@ -5,24 +5,11 @@
  */
 package balancemaker.UI.xclusion;
 
+import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import java.awt.ItemSelectable;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javax.swing.AbstractListModel;
-import javax.swing.ComboBoxModel;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.swing.DefaultEventComboBoxModel;
 
 /**
  * For PREVENTING_INVALIDITY
@@ -36,23 +23,56 @@ import javax.swing.ComboBoxModel;
  * @author Red
  * @param <U>
  */
-public class XclusionSystem<U> implements ItemListener, ListEventListener<U> {
+public class XclusionSystem<U> /*implements ItemListener, ListEventListener<U> */{
     private final U defaultValue;
-    private final Map<U, Byte> selectables;
-    private final Map<Byte, XclusionListModel> listModels;
-    private Byte count = 0;
+    private final EventList<U> selectables;
+    private final EventList<XclusionComboBoxModel> selectors = new BasicEventList<>();
     
-    public XclusionSystem(U defaultValue, EventList<U> selectableCollection) {
+    public XclusionSystem(U defaultValue, EventList<U> selectables) {
         this.defaultValue = defaultValue;
-        this.listModels = new TreeMap<>();
+        this.selectables = selectables;
         
-        selectables = new LinkedHashMap<>();
-        for (U t : selectableCollection) selectables.putIfAbsent(t, (byte)0);
+        //selectables.addListEventListener(this);
+    }
+    
+    public class XclusionComboBoxModel extends DefaultEventComboBoxModel<U> {
+
+        public XclusionComboBoxModel() {
+            super(new FilterList<>(selectables));
+            ((FilterList)this.source).setMatcher(new XclusionMatcher(this));
+            /*        e -> {
+                
+            for (XclusionComboBoxModel model : selectors)
+                if (this.getSelectedItem().equals(value) && !model.equals(this))
+                    return true;
+            return false;
+            }));
+            selectors.add(this);
+            Matcher<U> =
+                (e) -> e.getValue() == 0 || e.getKey().equals(getSelectedItem());
+            isSelectedByAnyExcept(defaultValue, this);*/
+        }
         
-        selectableCollection.addListEventListener(this);
+    }
+    
+    private class XclusionMatcher implements Matcher<U> {
+        private final XclusionComboBoxModel model;
+        
+        public XclusionMatcher (XclusionComboBoxModel model) {
+            this.model = model;
+        }
+
+        @Override
+        public boolean matches(U item) {
+            for (XclusionComboBoxModel currentModel : selectors)
+                if (currentModel.getSelectedItem().equals(item) && !model.equals(currentModel))
+                    return false;
+            return true;
+            }
+        
     }
 
-    @Override
+    /*@Override
     public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.DESELECTED) {
             selectables.put((U) e.getItem(), (byte) 0);
@@ -79,15 +99,16 @@ public class XclusionSystem<U> implements ItemListener, ListEventListener<U> {
             lm.fireContentsChanged();
     }
     
-    public final class XclusionListModel extends AbstractListModel<U>
-            implements ComboBoxModel<U>, ItemSelectable {
+    public final class XclusionListModel extends DefaultEventComboBoxModel<U>
+            implements ItemSelectable {
         private U previouslySelected;
         private U selectedItem = defaultValue;
-        private final Byte ownCount;
         
         public XclusionListModel() {
-            ownCount = ++count;
-            listModels.put(ownCount, this);
+            super(new FilterList<>(selectables, u -> true), false);
+            
+            //selectors.add(this);
+            
             addItemListener(XclusionSystem.this);
         }
 
@@ -141,5 +162,5 @@ public class XclusionSystem<U> implements ItemListener, ListEventListener<U> {
             for (ItemListener l : itemListenerList)
                 l.itemStateChanged(new ItemEvent(this, 0, previouslySelected, ItemEvent.DESELECTED));
         }
-    }
+    }*/
 }

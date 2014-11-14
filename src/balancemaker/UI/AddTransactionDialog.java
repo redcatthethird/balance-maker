@@ -8,6 +8,7 @@ package balancemaker.UI;
 import balancemaker.*;
 import balancemaker.UI.xclusion.XclusionSystem;
 import java.awt.Color;
+import java.awt.Component;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.function.Predicate;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.SimpleBooleanProperty;
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
@@ -43,7 +45,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     };
     
     private final Manager manager;
-    private XclusionSystem<Buyer> exclusion;
+    private final XclusionSystem<Buyer> exclusion;
 
     /**
      * Creates new form AddTransactionDialog
@@ -89,16 +91,11 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         amountTextBox = new javax.swing.JTextField();
         buyerList = new javax.swing.JComboBox();
         paybackCheckBox = new javax.swing.JCheckBox();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jComboBox1 = new javax.swing.JComboBox();
         saveButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        jComboBox2 = new javax.swing.JComboBox();
         jComboBox3 = new javax.swing.JComboBox();
         jComboBox4 = new javax.swing.JComboBox();
-        jComboBox5 = new javax.swing.JComboBox();
         jComboBox6 = new javax.swing.JComboBox();
-        jComboBox7 = new javax.swing.JComboBox();
         jComboBox8 = new javax.swing.JComboBox();
         jComboBox9 = new javax.swing.JComboBox();
 
@@ -108,14 +105,9 @@ public class AddTransactionDialog extends javax.swing.JDialog {
 
         jLabel2.setText("Date :");
 
-        buyerList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Select a buyer", "Item 2", "Item 3", "Item 4" }));
+        buyerList.setModel(exclusion.new XclusionComboBoxModel());
 
         paybackCheckBox.setText("Payback");
-
-        jScrollPane1.setName("Debts"); // NOI18N
-
-        jComboBox1.setModel(exclusion.new XclusionListModel());
-        jScrollPane1.setViewportView(jComboBox1);
 
         saveButton.setText("Save");
         saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -131,31 +123,22 @@ public class AddTransactionDialog extends javax.swing.JDialog {
             }
         });
 
-        jComboBox2.setModel(exclusion.new XclusionListModel());
+        jComboBox3.setModel(exclusion.new XclusionComboBoxModel());
 
-        jComboBox3.setModel(exclusion.new XclusionListModel());
+        jComboBox4.setModel(exclusion.new XclusionComboBoxModel());
 
-        jComboBox4.setModel(exclusion.new XclusionListModel());
+        jComboBox6.setModel(exclusion.new XclusionComboBoxModel());
 
-        jComboBox5.setModel(exclusion.new XclusionListModel());
+        jComboBox8.setModel(exclusion.new XclusionComboBoxModel());
 
-        jComboBox6.setModel(exclusion.new XclusionListModel());
-
-        jComboBox7.setModel(exclusion.new XclusionListModel());
-
-        jComboBox8.setModel(exclusion.new XclusionListModel());
-
-        jComboBox9.setModel(exclusion.new XclusionListModel());
+        jComboBox9.setModel(exclusion.new XclusionComboBoxModel());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(139, 139, 139)
                 .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
@@ -188,12 +171,9 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jComboBox9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jComboBox8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(64, 64, 64)
-                            .addComponent(jComboBox7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(92, 92, 92)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -212,18 +192,10 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paybackCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
                 .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(49, 49, 49)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 133, Short.MAX_VALUE)
                 .addComponent(jComboBox6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(32, 32, 32)
                 .addComponent(jComboBox8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -259,17 +231,12 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     private javax.swing.JTextField amountTextBox;
     private javax.swing.JComboBox buyerList;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox2;
     private javax.swing.JComboBox jComboBox3;
     private javax.swing.JComboBox jComboBox4;
-    private javax.swing.JComboBox jComboBox5;
     private javax.swing.JComboBox jComboBox6;
-    private javax.swing.JComboBox jComboBox7;
     private javax.swing.JComboBox jComboBox8;
     private javax.swing.JComboBox jComboBox9;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JCheckBox paybackCheckBox;
     private javax.swing.JTextField receiptTextBox;
     private javax.swing.JButton saveButton;

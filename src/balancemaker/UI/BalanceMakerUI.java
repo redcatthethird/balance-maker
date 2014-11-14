@@ -25,7 +25,7 @@ public class BalanceMakerUI extends javax.swing.JFrame{
     public BalanceMakerUI() {
         initComponents();
         postInit();
-    }
+    }// TODO: Make the columns sortable.
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -268,18 +268,6 @@ public class BalanceMakerUI extends javax.swing.JFrame{
                 syncBuyerComboBox(buyerLeft, (Buyer)e.getItem());
         });
         
-        
-        
-        
-        Buyer Catalin = new Buyer("Cătălin");
-        Buyer Andrei = new Buyer("Andrei");
-        Buyer Iustin = new Buyer("Iustin");
-        Transaction t = new TransactionBuilder().Store("Pe stradă, în cartier")
-            .Receipt("Iarbă, bere, tutun și alte alea").Amount(103f).Buyer(Iustin)
-            .addDebt(35f, Andrei).addDebt(39f, Catalin).createTransaction();
-        manager.transactions.add(t);
-        
-        
         /*manager.buyers.addListEventListener((ListChangeListener.Change<? extends Buyer> c) -> {
             while (c.next()) {
                 if (c.getRemoved().contains((Buyer)buyerLeft.getSelectedItem()))
@@ -347,6 +335,14 @@ public class BalanceMakerUI extends javax.swing.JFrame{
         manager.transactions.add(new TransactionBuilder().Store("Sainsbury's")
             .Amount(13f).Buyer(Andu).addDebt(6f, Ciupi).addDebt(3f, Claudiu)
             .Receipt("Ghici").Payback(true).createTransaction());
+        
+        Buyer Catalin = new Buyer("Cătălin");
+        Buyer Andrei = new Buyer("Andrei");
+        Buyer Iustin = new Buyer("Iustin");
+        Transaction t = new TransactionBuilder().Store("Pe stradă, în cartier")
+            .Receipt("Iarbă, bere, tutun și alte alea").Amount(103f).Buyer(Iustin)
+            .addDebt(35f, Andrei).addDebt(39f, Catalin).createTransaction();
+        manager.transactions.add(t);
     }
 
     private void removeSelectedTransactions() {
