@@ -6,7 +6,6 @@
 package balancemaker.ui;
 
 import balancemaker.*;
-import balancemaker.ui.xclusion.XclusionSystem;
 import java.awt.Color;
 import java.time.Instant;
 import java.util.Date;
