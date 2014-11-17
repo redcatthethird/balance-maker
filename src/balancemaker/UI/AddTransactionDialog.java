@@ -53,30 +53,12 @@ public class AddTransactionDialog extends javax.swing.JDialog {
      */
     public AddTransactionDialog(java.awt.Frame parent, boolean modal, Manager manager) {
         super(parent, modal);
+        initComponents();
         
         this.manager = manager;
         this.exclusion = new XclusionSystem<>(Buyer.none, manager.buyers);
         
-        initComponents();
-        
-        PromptSupport.setPrompt("Enter store name", storeTextBox);
-        PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, storeTextBox);
-        PromptSupport.setPrompt("Enter receipt or comment", receiptTextBox);
-        PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, receiptTextBox);
-        PromptSupport.setPrompt("Enter amount", amountTextBox);
-        PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, amountTextBox);
-        
-        fieldValidators.put(storeTextBox, AddTransactionDialog::isNotEmpty);
-        fieldValidators.put(amountTextBox, AddTransactionDialog::isValidFloat);
-        
-        for (JTextField tf : fieldValidators.keySet())
-            tf.getDocument().addDocumentListener(textChangeListener);
-        
-        fieldsAreValid.addListener((o) -> saveButton.setEnabled(fieldsAreValid.get()));
-        
-        this.fieldsAreValid.set(false);
-        
-        validateFields();
+        postInit();
     }
 
     @SuppressWarnings("unchecked")
@@ -103,8 +85,6 @@ public class AddTransactionDialog extends javax.swing.JDialog {
 
         jLabel2.setText("Date :");
 
-        buyerList.setModel(exclusion.getModel(Buyer.idComparator););
-
         paybackCheckBox.setText("Payback");
 
         saveButton.setText("Save");
@@ -120,16 +100,6 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                 cancelButtonMouseClicked(evt);
             }
         });
-
-        jComboBox3.setModel(exclusion.getModel(Buyer.idComparator););
-
-        jComboBox4.setModel(exclusion.getModel(Buyer.idComparator););
-
-        jComboBox6.setModel(exclusion.getModel(Buyer.idComparator););
-
-        jComboBox8.setModel(exclusion.getModel(Buyer.idComparator););
-
-        jComboBox9.setModel(exclusion.getModel(Buyer.idComparator););
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -263,4 +233,33 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     }
     
     // TODO: Implement buyer and debtor selection.
+
+    private void postInit() {
+        exclusion.install(buyerList);
+        
+        exclusion.install(jComboBox3);
+        exclusion.install(jComboBox4);
+        exclusion.install(jComboBox6);
+        exclusion.install(jComboBox8);
+        exclusion.install(jComboBox9);
+        
+        PromptSupport.setPrompt("Enter store name", storeTextBox);
+        PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, storeTextBox);
+        PromptSupport.setPrompt("Enter receipt or comment", receiptTextBox);
+        PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, receiptTextBox);
+        PromptSupport.setPrompt("Enter amount", amountTextBox);
+        PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, amountTextBox);
+        
+        fieldValidators.put(storeTextBox, AddTransactionDialog::isNotEmpty);
+        fieldValidators.put(amountTextBox, AddTransactionDialog::isValidFloat);
+        
+        for (JTextField tf : fieldValidators.keySet())
+            tf.getDocument().addDocumentListener(textChangeListener);
+        
+        fieldsAreValid.addListener((o) -> saveButton.setEnabled(fieldsAreValid.get()));
+        
+        this.fieldsAreValid.set(false);
+        
+        validateFields();
+    }
 }
