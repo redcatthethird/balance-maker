@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package balancemaker.UI;
+package balancemaker.ui;
 
 import balancemaker.*;
-import balancemaker.UI.xclusion.XclusionSystem;
+import balancemaker.ui.xclusion.XclusionSystem;
 import java.awt.Color;
-import java.awt.Component;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import java.util.function.Predicate;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.SimpleBooleanProperty;
 import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
@@ -105,7 +103,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
 
         jLabel2.setText("Date :");
 
-        buyerList.setModel(exclusion.new XclusionComboBoxModel());
+        buyerList.setModel(exclusion.getModel(Buyer.idComparator););
 
         paybackCheckBox.setText("Payback");
 
@@ -123,15 +121,15 @@ public class AddTransactionDialog extends javax.swing.JDialog {
             }
         });
 
-        jComboBox3.setModel(exclusion.new XclusionComboBoxModel());
+        jComboBox3.setModel(exclusion.getModel(Buyer.idComparator););
 
-        jComboBox4.setModel(exclusion.new XclusionComboBoxModel());
+        jComboBox4.setModel(exclusion.getModel(Buyer.idComparator););
 
-        jComboBox6.setModel(exclusion.new XclusionComboBoxModel());
+        jComboBox6.setModel(exclusion.getModel(Buyer.idComparator););
 
-        jComboBox8.setModel(exclusion.new XclusionComboBoxModel());
+        jComboBox8.setModel(exclusion.getModel(Buyer.idComparator););
 
-        jComboBox9.setModel(exclusion.new XclusionComboBoxModel());
+        jComboBox9.setModel(exclusion.getModel(Buyer.idComparator););
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

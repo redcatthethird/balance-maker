@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
 */
-package balancemaker.UI;
+package balancemaker.ui;
 
 import balancemaker.*;
 import java.awt.event.*;

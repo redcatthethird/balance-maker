@@ -131,7 +131,7 @@
     <Component class="javax.swing.JComboBox" name="buyerList">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="exclusion.new XclusionComboBoxModel()" type="code"/>
+          <Connection code="exclusion.getModel(Buyer.idComparator);" type="code"/>
         </Property>
       </Properties>
     </Component>
@@ -159,35 +159,35 @@
     <Component class="javax.swing.JComboBox" name="jComboBox3">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="exclusion.new XclusionComboBoxModel()" type="code"/>
+          <Connection code="exclusion.getModel(Buyer.idComparator);" type="code"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="jComboBox4">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="exclusion.new XclusionComboBoxModel()" type="code"/>
+          <Connection code="exclusion.getModel(Buyer.idComparator);" type="code"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="jComboBox6">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="exclusion.new XclusionComboBoxModel()" type="code"/>
+          <Connection code="exclusion.getModel(Buyer.idComparator);" type="code"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="jComboBox8">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="exclusion.new XclusionComboBoxModel()" type="code"/>
+          <Connection code="exclusion.getModel(Buyer.idComparator);" type="code"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="jComboBox9">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="exclusion.new XclusionComboBoxModel()" type="code"/>
+          <Connection code="exclusion.getModel(Buyer.idComparator);" type="code"/>
         </Property>
       </Properties>
     </Component>

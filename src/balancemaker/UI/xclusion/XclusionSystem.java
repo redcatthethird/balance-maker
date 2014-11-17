@@ -3,13 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package balancemaker.UI.xclusion;
+package balancemaker.ui.xclusion;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.swing.DefaultEventComboBoxModel;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  * For PREVENTING_INVALIDITY
@@ -25,17 +31,38 @@ import ca.odell.glazedlists.swing.DefaultEventComboBoxModel;
  */
 public class XclusionSystem<U> /*implements ItemListener, ListEventListener<U> */{
     private final U defaultValue;
-    private final EventList<U> selectables;
-    private final EventList<XclusionComboBoxModel> selectors = new BasicEventList<>();
+    private final List<U> selectables;
+    private final List<DefaultComboBoxModel<U>> selectors = new LinkedList<>();
     
-    public XclusionSystem(U defaultValue, EventList<U> selectables) {
+    public XclusionSystem(U defaultValue, List<U> selectables) {
         this.defaultValue = defaultValue;
         this.selectables = selectables;
         
         //selectables.addListEventListener(this);
     }
     
-    public class XclusionComboBoxModel extends DefaultEventComboBoxModel<U> {
+    public DefaultComboBoxModel<U> getModel() {
+        DefaultComboBoxModel<U> model = new DefaultComboBoxModel<U>(selectables.toArray());
+        selectors.add(model);
+        return model;
+    }
+    /*public DefaultComboBoxModel<U> getModel(Comparator<U> comp) {
+        DefaultComboBoxModel<U> model;
+        model = new DefaultComboBoxModel(new SortedList<>(selectables, comp));
+        selectors.add(model);
+        return model;
+    }*/
+    
+    private void onItemSelected(DefaultComboBoxModel<U> model, U value) {
+        // Remove the selected item out of every other combobox.
+        for (DefaultComboBoxModel<U> m : selectors) {
+            if (!m.equals(model))
+                m.
+                
+        }
+    }
+    
+    /*public class XclusionComboBoxModel extends DefaultEventComboBoxModel<U> {
 
         public XclusionComboBoxModel() {
             super(new FilterList<>(selectables));
@@ -50,7 +77,7 @@ public class XclusionSystem<U> /*implements ItemListener, ListEventListener<U> *
             selectors.add(this);
             Matcher<U> =
                 (e) -> e.getValue() == 0 || e.getKey().equals(getSelectedItem());
-            isSelectedByAnyExcept(defaultValue, this);*/
+            isSelectedByAnyExcept(defaultValue, this);
         }
         
     }
@@ -64,7 +91,7 @@ public class XclusionSystem<U> /*implements ItemListener, ListEventListener<U> *
 
         @Override
         public boolean matches(U item) {
-            for (XclusionComboBoxModel currentModel : selectors)
+            for (DefaultEventComboBoxModel<U> currentModel : selectors)
                 if (currentModel.getSelectedItem().equals(item) && !model.equals(currentModel))
                     return false;
             return true;
@@ -72,7 +99,7 @@ public class XclusionSystem<U> /*implements ItemListener, ListEventListener<U> *
         
     }
 
-    /*@Override
+    @Override
     public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.DESELECTED) {
             selectables.put((U) e.getItem(), (byte) 0);
