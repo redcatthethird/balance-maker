@@ -7,6 +7,7 @@ package balancemaker;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.CollectionList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.UniqueList;
 import java.util.List;
 import java.util.function.BinaryOperator;
@@ -16,9 +17,7 @@ public class Manager {
     public final EventList<Buyer> buyers;
     private final BinaryOperator<Float> sum = (x, y) -> x + y;
     
-    public Manager() {
-        //transactions.addListEventListener(this::updateBuyers);        
-        
+    public Manager() {   
         // Building tree model
         CollectionList.Model<Transaction, Buyer> buyerTreeModel = parent -> {
             EventList<Buyer> buyers1;
@@ -33,13 +32,8 @@ public class Manager {
         // Constructing the list pipeline for the buyers
         CollectionList<Transaction, Buyer> collectedBuyers
                 = new CollectionList<>(transactions, buyerTreeModel);
-        buyers = //new ReadOnlyList<>(
-                //new SortedList<>(
-                        new UniqueList<>(collectedBuyers, Buyer.idComparator)
-                        //,
-                        //Buyer.idComparator)
-        //)
-                ;
+        buyers = GlazedLists.threadSafeList(GlazedLists.readOnlyList(
+                    new UniqueList<>(collectedBuyers, Buyer.idComparator)));
     }
     
     public List<Transaction> getTransactionsFromBuyer(Buyer b) {
@@ -55,10 +49,12 @@ public class Manager {
     // Returns the amount b should receive.
     public float getDebtsTo(Buyer b) {
         float debt = 0f;
+        transactions.getReadWriteLock().readLock().lock();
         for (Transaction t : transactions)
             if (t.getBuyer().equals(b))
                 debt += t.getDebtList().stream()
                          .map(Transaction.Debt::getAmount).reduce(0f, sum);
+        transactions.getReadWriteLock().readLock().unlock();
         return debt;
     }
     // Returns the amount b should receive.

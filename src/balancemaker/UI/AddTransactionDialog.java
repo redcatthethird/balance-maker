@@ -42,7 +42,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     };
     
     private final Manager manager;
-    private final XclusionSystem<Buyer> exclusion;
+    private final ExclusionSystem<Buyer> exclusion;
 
     /**
      * Creates new form AddTransactionDialog
@@ -55,7 +55,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         initComponents();
         
         this.manager = manager;
-        this.exclusion = new XclusionSystem<>(Buyer.none, manager.buyers);
+        this.exclusion = new ExclusionSystem<>(Buyer.none, manager.buyers);
         
         postInit();
     }

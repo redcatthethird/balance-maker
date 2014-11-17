@@ -7,6 +7,7 @@ package balancemaker.ui;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.UniqueList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.DefaultEventComboBoxModel;
@@ -21,12 +22,12 @@ import javax.swing.JComboBox;
  * @author Red
  * @param <U>
  */
-public class XclusionSystem<U> implements ItemListener, ListEventListener<U> {
+public class ExclusionSystem<U> implements ItemListener, ListEventListener<U> {
     private final U defaultValue;
     private final EventList<U> selectables;
     private final List<JComboBox<U>> selectors = new LinkedList<>();
     
-    public XclusionSystem(U defaultValue, EventList<U> selectables) {
+    public ExclusionSystem(U defaultValue, EventList<U> selectables) {
         this.defaultValue = defaultValue;
         this.selectables = GlazedLists.eventList(selectables);
         this.selectables.add(0, defaultValue);
@@ -54,5 +55,20 @@ public class XclusionSystem<U> implements ItemListener, ListEventListener<U> {
 
     @Override
     public void listChanged(ListEvent<U> listChanges) {
+        while (listChanges.next() && !listChanges.isReordering()) {
+            if (listChanges.getType() == ListEvent.DELETE)
+            {
+                U deleted = selectables.get(1 + listChanges.getIndex());
+                for (JComboBox<U> cb : selectors)
+                    if (cb.getSelectedItem().equals(deleted)) {
+                        cb.setSelectedItem(defaultValue);
+                        selectables.remove(deleted);
+                        break;
+                    }
+            }
+        }
+        selectables.clear();
+        selectables.addAll(listChanges.getSourceList());
+        selectables.add(0, defaultValue);
     }
 }

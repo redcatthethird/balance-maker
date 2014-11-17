@@ -8,7 +8,7 @@ package balancemaker.ui;
 import balancemaker.*;
 import java.awt.event.*;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
-import javax.swing.JComboBox;
+import java.awt.EventQueue;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
@@ -18,14 +18,83 @@ import javax.swing.table.AbstractTableModel;
  */
 public class BalanceMakerUI extends javax.swing.JFrame{
     private final Manager manager = new Manager();
-        
-    /**
-     * Creates new form BalanceMakerUI
-     */
+    private final ExclusionSystem<Buyer> exclusion = new ExclusionSystem<>(Buyer.none, manager.buyers);
+    private final Runnable updateDebtLabel = new Runnable() {
+        @Override
+        public void run() {
+            Buyer l = (Buyer)buyerLeft.getSelectedItem(); if(l==null) return;
+            boolean lNone = l.equals(Buyer.none);
+            Buyer r = (Buyer)buyerRight.getSelectedItem(); if(r==null) return;
+            boolean rNone = r.equals(Buyer.none);
+            
+            float debt = 0;
+            
+            if (lNone && rNone)
+                for (Buyer b : manager.buyers)
+                    debt += manager.getDebtsTo(b);
+            else if (lNone && !rNone) debt += manager.getDebtsTo(r);
+            else if (!lNone && rNone) debt += manager.getDebts(l);
+            else debt += manager.getDebtsTo(l, r);
+            
+            debtLabel.setText('£' + Float.toString(debt));
+        }
+    };
+    
     public BalanceMakerUI() {
         initComponents();
         postInit();
     }// TODO: Make the columns sortable.
+    private void postInit() {
+        populateList();
+        
+        // Set the table model.
+        transactionTable.setModel(
+                GlazedListsSwing.eventTableModelWithThreadProxyList(
+                        manager.transactions,
+                        new TransactionTableFormat(manager.buyers)));
+        // Refresh the table on list changes.
+        manager.buyers.addListEventListener(e ->
+                ((AbstractTableModel)transactionTable.getModel())
+                        .fireTableStructureChanged());
+        
+        // Refresh the debt label when anything changes.
+        buyerLeft.addItemListener(e -> updateDebtLabel.run());
+        buyerRight.addItemListener(e -> updateDebtLabel.run());
+        manager.transactions.addListEventListener(
+                // Asynchronicity is necessary as the buyers are not updated yet.
+                e -> EventQueue.invokeLater(updateDebtLabel));
+        
+        // Make the two combo boxes mutually exclusive.
+        exclusion.install(buyerLeft); exclusion.install(buyerRight);
+    }
+    
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info :
+                    javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException |
+                IllegalAccessException |
+                javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(BalanceMakerUI.class.getName())
+                    .log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            new BalanceMakerUI().setVisible(true);
+        });
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -71,13 +140,11 @@ public class BalanceMakerUI extends javax.swing.JFrame{
         jLabel1.setText("Debt from");
 
         buyerLeft.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        buyerLeft.setModel(new DisplayBuyerComboBoxModel());
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("to");
 
         buyerRight.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        buyerRight.setModel(new DisplayBuyerComboBoxModel());
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText(":");
@@ -198,34 +265,6 @@ public class BalanceMakerUI extends javax.swing.JFrame{
             .addDebt(35f, Andrei).addDebt(39f, Catalin).createTransaction());*/
     }                                           
 
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info :
-                    javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException |
-                IllegalAccessException |
-                javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(BalanceMakerUI.class.getName())
-                    .log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new BalanceMakerUI().setVisible(true);
-        });
-    }
-
     // <editor-fold defaultstate="collapsed" desc="Form Components">
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addTransaction;
@@ -243,106 +282,25 @@ public class BalanceMakerUI extends javax.swing.JFrame{
     private javax.swing.JButton removeTransaction;
     private javax.swing.JTable transactionTable;
     // End of variables declaration//GEN-END:variables
-    // </editor-fold>   
-    
-    private void postInit() {
-        populateList();
-        
-        transactionTable.setModel(
-                GlazedListsSwing.eventTableModelWithThreadProxyList(
-                        manager.transactions,
-                        new TransactionTableFormat(manager.buyers)));
-        manager.buyers.addListEventListener(e ->
-                ((AbstractTableModel)transactionTable.getModel())
-                        .fireTableStructureChanged());
-        
-        buyerLeft.addItemListener(this::updateDebtLabel);
-        buyerRight.addItemListener(this::updateDebtLabel);
-        
-        buyerLeft.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED)
-                syncBuyerComboBox(buyerRight, (Buyer)e.getItem());
-        });
-        buyerRight.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED)
-                syncBuyerComboBox(buyerLeft, (Buyer)e.getItem());
-        });
-        
-        /*manager.buyers.addListEventListener((ListChangeListener.Change<? extends Buyer> c) -> {
-            while (c.next()) {
-                if (c.getRemoved().contains((Buyer)buyerLeft.getSelectedItem()))
-                    deselBuyerComboBox(buyerLeft, false);
-                if (c.getRemoved().contains((Buyer)buyerRight.getSelectedItem()))
-                    deselBuyerComboBox(buyerRight, false);
-            
-                syncBuyerComboBox(buyerLeft, (Buyer)buyerRight.getSelectedItem());
-                syncBuyerComboBox(buyerRight, (Buyer)buyerLeft.getSelectedItem());
-            }
-        });*/
-        
-        deselBuyerComboBox(buyerLeft, true); deselBuyerComboBox(buyerRight, true);
-    }
-    
-    // Rebuilds the given JComboBox list, removing the given Buyer
-    public void syncBuyerComboBox(JComboBox cbx, Buyer otherSelBuyer) {
-        DisplayBuyerComboBoxModel model = (DisplayBuyerComboBoxModel)cbx.getModel();
-        Object sel = model.getSelectedItem();
-        model.removeAllElements();
-        model.addElement(Buyer.none, false);
-        for (Buyer b : manager.buyers)
-            model.addElement(b, false);
-        
-        // If a Buyer other than Buyer.none was selected, remove it from here.
-        if (!otherSelBuyer.equals(Buyer.none)) model.removeElement(otherSelBuyer);
-        
-        model.setSelectedItem(sel, false);
-        updateDebtLabel(null);
-    }
-    private void deselBuyerComboBox(JComboBox cbx, boolean fireChanges) {
-        ((DisplayBuyerComboBoxModel)cbx.getModel())
-                .setSelectedItem(Buyer.none, fireChanges);
-    }
-    private void updateDebtLabel(java.awt.event.ItemEvent e) {
-        Buyer l = (Buyer)buyerLeft.getSelectedItem(); if(l==null) return;
-        boolean lNone = l.equals(Buyer.none);
-        Buyer r = (Buyer)buyerRight.getSelectedItem(); if(r==null) return;
-        boolean rNone = r.equals(Buyer.none);
-
-        float debt;
-
-        if (lNone && rNone) {
-            debt = manager.buyers.stream()
-                    .map((b) -> manager.getDebtsTo(b))
-                    .reduce(0f, (x, y) -> x + y);
-        }
-        else if (lNone && !rNone)
-            debt = manager.getDebtsTo(r);
-        else if (!lNone && rNone)
-            debt = manager.getDebts(l);
-        else debt = manager.getDebtsTo(l, r);
-
-        debtLabel.setText('£' + Float.toString(debt));
-    }
-    
+    // </editor-fold>
     private void populateList() {
         Buyer Andu    = new Buyer("Andu");
         Buyer Ciupi   = new Buyer("Ciupi");
         Buyer Claudiu = new Buyer("Claudiu");
+        Buyer Catalin = new Buyer("Cătălin");
+        Buyer Andrei  = new Buyer("Andrei");
+        Buyer Iustin  = new Buyer("Iustin");
         
         manager.transactions.add(new TransactionBuilder().Store("Morrisons")
             .Amount(52f).Buyer(Ciupi).addDebt(3f, Andu).addDebt(5f, Claudiu)
             .createTransaction());
-        manager.transactions.add(new TransactionBuilder().Store("Sainsbury's")
-            .Amount(13f).Buyer(Andu).addDebt(6f, Ciupi).addDebt(3f, Claudiu)
-            .Receipt("Ghici").Payback(true).createTransaction());
-        
-        Buyer Catalin = new Buyer("Cătălin");
-        Buyer Andrei = new Buyer("Andrei");
-        Buyer Iustin = new Buyer("Iustin");
         Transaction t = new TransactionBuilder().Store("Pe stradă, în cartier")
             .Receipt("Iarbă, bere, tutun și alte alea").Amount(103f).Buyer(Iustin)
             .addDebt(35f, Andrei).addDebt(39f, Catalin).createTransaction();
         manager.transactions.add(t);
+        manager.transactions.add(new TransactionBuilder().Store("Sainsbury's")
+            .Amount(13f).Buyer(Andu).addDebt(6f, Ciupi).addDebt(3f, Claudiu)
+            .Receipt("Ghici").Payback(true).createTransaction());
     }
 
     private void removeSelectedTransactions() {
