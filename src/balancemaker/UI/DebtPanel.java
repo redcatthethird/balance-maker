@@ -33,7 +33,7 @@ public class DebtPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buyer = new javax.swing.JComboBox();
+        buyer = new javax.swing.JComboBox<balancemaker.Buyer>();
         amount = new org.jdesktop.xswingx.JXTextField();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Debt #"));
@@ -61,7 +61,7 @@ public class DebtPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public org.jdesktop.xswingx.JXTextField amount;
-    public javax.swing.JComboBox buyer;
+    public javax.swing.JComboBox<balancemaker.Buyer> buyer;
     // End of variables declaration//GEN-END:variables
     public javax.swing.JButton close = new JXButton("x");
 }

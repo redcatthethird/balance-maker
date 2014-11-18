@@ -7,6 +7,7 @@ package balancemaker.ui;
 
 import balancemaker.*;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                     BorderFactory.createLineBorder(Color.RED, 2), defaultTextFieldBorder);
     
     private final Map<JTextField, Predicate<String>> fieldValidators = new HashMap<>(3);
-    private BooleanPropertyBase fieldsAreValid = new SimpleBooleanProperty(true);
+    private final BooleanPropertyBase fieldsAreValid = new SimpleBooleanProperty(true);
     private final DocumentListener textChangeListener = new DocumentListener() {
         @Override
         public void changedUpdate(DocumentEvent e) { validateFields(); }
@@ -63,17 +64,19 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         storeTextBox = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         receiptTextBox = new javax.swing.JTextField();
         amountTextBox = new javax.swing.JTextField();
-        buyerList = new javax.swing.JComboBox();
+        buyerList = new javax.swing.JComboBox<Buyer>();
         paybackCheckBox = new javax.swing.JCheckBox();
         saveButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        addDebt = new javax.swing.JButton();
+        debtsScroller = new javax.swing.JScrollPane();
         debtsPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Add transaction");
@@ -97,23 +100,19 @@ public class AddTransactionDialog extends javax.swing.JDialog {
             }
         });
 
-        javax.swing.GroupLayout debtsPanelLayout = new javax.swing.GroupLayout(debtsPanel);
-        debtsPanel.setLayout(debtsPanelLayout);
-        debtsPanelLayout.setHorizontalGroup(
-            debtsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        debtsPanelLayout.setVerticalGroup(
-            debtsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-
-        jButton1.setText("Add debt");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        addDebt.setText("Add debt");
+        addDebt.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+                addDebtMouseClicked(evt);
             }
         });
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, debtsScroller, org.jdesktop.beansbinding.ELProperty.create("${viewport.viewSize.width}"), debtsPanel, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
+        binding.setConverter(new DoubleToDebtsPanelWidthConverter());
+        bindingGroup.addBinding(binding);
+
+        debtsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        debtsScroller.setViewportView(debtsPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -122,7 +121,6 @@ public class AddTransactionDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(debtsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(storeTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -131,17 +129,15 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(saveButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)
+                        .addComponent(addDebt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cancelButton))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(buyerList, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel2))
-                            .addComponent(paybackCheckBox))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(buyerList, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel2))
+                    .addComponent(paybackCheckBox)
+                    .addComponent(debtsScroller))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -160,14 +156,16 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paybackCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(debtsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(debtsScroller, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
+                .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveButton)
                     .addComponent(cancelButton)
-                    .addComponent(jButton1))
-                .addGap(10, 10, 10))
+                    .addComponent(addDebt))
+                .addContainerGap())
         );
+
+        bindingGroup.bind();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -188,21 +186,23 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_saveButtonMouseClicked
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    private void addDebtMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addDebtMouseClicked
         debtsPanel.add(new DebtPanel());
-    }//GEN-LAST:event_jButton1MouseClicked
+    }//GEN-LAST:event_addDebtMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addDebt;
     private javax.swing.JTextField amountTextBox;
-    private javax.swing.JComboBox buyerList;
+    private javax.swing.JComboBox<Buyer> buyerList;
     private javax.swing.JButton cancelButton;
     private javax.swing.JPanel debtsPanel;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JScrollPane debtsScroller;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JCheckBox paybackCheckBox;
     private javax.swing.JTextField receiptTextBox;
     private javax.swing.JButton saveButton;
     private javax.swing.JTextField storeTextBox;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
     private void validateFields() {
@@ -217,10 +217,10 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     }
     
     private static boolean isNotEmpty(String text) { return !text.isEmpty(); }
-    private static boolean isValidFloat(String text) {
+    private static boolean isPositiveFloat(String text) {
         try {
-            Float.parseFloat(text);
-            return true;
+            float f = Float.parseFloat(text);
+            return f >= 0;
         } catch (NumberFormatException e) {
             return false;
         }
@@ -239,7 +239,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, amountTextBox);
         
         fieldValidators.put(storeTextBox, AddTransactionDialog::isNotEmpty);
-        fieldValidators.put(amountTextBox, AddTransactionDialog::isValidFloat);
+        fieldValidators.put(amountTextBox, AddTransactionDialog::isPositiveFloat);
         
         for (JTextField tf : fieldValidators.keySet())
             tf.getDocument().addDocumentListener(textChangeListener);
@@ -249,5 +249,19 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         this.fieldsAreValid.set(false);
         
         validateFields();
+    }
+    
+    private class DoubleToDebtsPanelWidthConverter extends org.jdesktop.beansbinding.Converter<Double, Dimension> {
+
+        @Override
+        public Dimension convertForward(Double value) {
+            return new Dimension((int)(double)value, debtsPanel.getHeight());
+        }
+
+        @Override
+        public Double convertReverse(Dimension value) {
+            return value.getWidth();
+        }
+        
     }
 }

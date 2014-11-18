@@ -46,6 +46,7 @@
   <SubComponents>
     <Component class="javax.swing.JComboBox" name="buyer">
       <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;balancemaker.Buyer&gt;"/>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
