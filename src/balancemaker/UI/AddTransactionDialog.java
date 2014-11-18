@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
-import javafx.beans.property.BooleanPropertyBase;
-import javafx.beans.property.SimpleBooleanProperty;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -32,7 +30,8 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                     BorderFactory.createLineBorder(Color.RED, 2), defaultTextFieldBorder);
     
     private final Map<JTextField, Predicate<String>> fieldValidators = new HashMap<>(3);
-    private final BooleanPropertyBase fieldsAreValid = new SimpleBooleanProperty(true);
+    private final javafx.beans.property.BooleanPropertyBase fieldsAreValid =
+            new javafx.beans.property.SimpleBooleanProperty(true);
     private final DocumentListener textChangeListener = new DocumentListener() {
         @Override
         public void changedUpdate(DocumentEvent e) { validateFields(); }
@@ -122,9 +121,9 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(storeTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(amountTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(storeTextBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(amountTextBox))
                     .addComponent(receiptTextBox)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(saveButton)
@@ -256,6 +255,8 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         @Override
         public Dimension convertForward(Double value) {
             return new Dimension((int)(double)value, debtsPanel.getHeight());
+            // TODO: Fix the scrolling side of things.
+            // TODO: Optimise this thing too. It's slow as hell.
         }
 
         @Override
