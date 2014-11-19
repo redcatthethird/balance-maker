@@ -7,7 +7,6 @@ package balancemaker.ui;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.UniqueList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.DefaultEventComboBoxModel;
@@ -23,6 +22,7 @@ import javax.swing.JComboBox;
  * @param <U>
  */
 public class ExclusionSystem<U> implements ItemListener, ListEventListener<U> {
+    // TODO: Notify the user of deselection.
     private final U defaultValue;
     private final EventList<U> selectables;
     private final List<JComboBox<U>> selectors = new LinkedList<>();

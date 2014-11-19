@@ -5,6 +5,7 @@
  */
 package balancemaker.ui;
 
+import javax.swing.border.TitledBorder;
 import org.jdesktop.swingx.JXButton;
 import org.jdesktop.xswingx.BuddySupport;
 
@@ -13,12 +14,19 @@ import org.jdesktop.xswingx.BuddySupport;
  * @author Red
  */
 public class DebtPanel extends javax.swing.JPanel {
+    private final int id;
 
     /**
      * Creates new form DebtPanel
+     * @param id
      */
-    public DebtPanel() {
+    public DebtPanel(int id) {
         initComponents();
+        
+        this.id = id;
+        
+        TitledBorder tb = (TitledBorder)getBorder();
+        tb.setTitle(tb.getTitle() + id);
         
         amount.setPrompt("Amount owed");
         amount.addBuddy(close, BuddySupport.Position.RIGHT);

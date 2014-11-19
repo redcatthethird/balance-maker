@@ -73,7 +73,7 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="paybackCheckBox" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="debtsScroller" pref="124" max="32767" attributes="0"/>
+              <Component id="debtsScroller" max="32767" attributes="0"/>
               <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="saveButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -132,21 +132,23 @@
       </Events>
     </Component>
     <Container class="javax.swing.JScrollPane" name="debtsScroller">
+      <Properties>
+        <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
+      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="debtsPanel">
-          <BindingProperties>
-            <BindingProperty name="preferredSize" source="debtsScroller" sourcePath="${viewport.viewSize.width}" target="debtsPanel" targetPath="preferredSize" updateStrategy="1" immediately="false">
-              <Property name="converter" type="org.jdesktop.beansbinding.Converter" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                <Connection code="new DoubleToDebtsPanelWidthConverter()" type="code"/>
-              </Property>
-            </BindingProperty>
-          </BindingProperties>
+        <Container class="org.jdesktop.swingx.JXPanel" name="debtsPanel">
+          <Properties>
+            <Property name="scrollableHeightHint" type="org.jdesktop.swingx.ScrollableSizeHint" editor="org.netbeans.modules.form.editors.EnumEditor">
+              <Value id="NONE"/>
+            </Property>
+            <Property name="scrollableWidthHint" type="org.jdesktop.swingx.ScrollableSizeHint" editor="org.netbeans.modules.form.editors.EnumEditor">
+              <Value id="FIT"/>
+            </Property>
+          </Properties>
 
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
-            <Property name="alignment" type="int" value="0"/>
-          </Layout>
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
         </Container>
       </SubComponents>
     </Container>

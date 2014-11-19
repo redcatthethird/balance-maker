@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.jdesktop.swingx.ScrollableSizeHint;
 import org.jdesktop.xswingx.PromptSupport;
 
 /**
@@ -43,6 +44,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     
     private final Manager manager;
     private final ExclusionSystem<Buyer> exclusion;
+    private int debts = 0;
 
     /**
      * Creates new form AddTransactionDialog
@@ -63,7 +65,6 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         storeTextBox = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -75,7 +76,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         cancelButton = new javax.swing.JButton();
         addDebt = new javax.swing.JButton();
         debtsScroller = new javax.swing.JScrollPane();
-        debtsPanel = new javax.swing.JPanel();
+        debtsPanel = new org.jdesktop.swingx.JXPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Add transaction");
@@ -106,11 +107,10 @@ public class AddTransactionDialog extends javax.swing.JDialog {
             }
         });
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, debtsScroller, org.jdesktop.beansbinding.ELProperty.create("${viewport.viewSize.width}"), debtsPanel, org.jdesktop.beansbinding.BeanProperty.create("preferredSize"));
-        binding.setConverter(new DoubleToDebtsPanelWidthConverter());
-        bindingGroup.addBinding(binding);
+        debtsScroller.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        debtsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        debtsPanel.setScrollableHeightHint(org.jdesktop.swingx.ScrollableSizeHint.NONE);
+        debtsPanel.setScrollableWidthHint(org.jdesktop.swingx.ScrollableSizeHint.FIT);
         debtsScroller.setViewportView(debtsPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -155,7 +155,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paybackCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(debtsScroller, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
+                .addComponent(debtsScroller)
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveButton)
@@ -163,8 +163,6 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                     .addComponent(addDebt))
                 .addContainerGap())
         );
-
-        bindingGroup.bind();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -186,7 +184,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_saveButtonMouseClicked
 
     private void addDebtMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addDebtMouseClicked
-        debtsPanel.add(new DebtPanel());
+        debtsPanel.add(new DebtPanel(++debts));
     }//GEN-LAST:event_addDebtMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -194,14 +192,13 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     private javax.swing.JTextField amountTextBox;
     private javax.swing.JComboBox<Buyer> buyerList;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JPanel debtsPanel;
+    private org.jdesktop.swingx.JXPanel debtsPanel;
     private javax.swing.JScrollPane debtsScroller;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JCheckBox paybackCheckBox;
     private javax.swing.JTextField receiptTextBox;
     private javax.swing.JButton saveButton;
     private javax.swing.JTextField storeTextBox;
-    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
     private void validateFields() {
@@ -257,6 +254,8 @@ public class AddTransactionDialog extends javax.swing.JDialog {
             return new Dimension((int)(double)value, debtsPanel.getHeight());
             // TODO: Fix the scrolling side of things.
             // TODO: Optimise this thing too. It's slow as hell.
+            
+//            new ScrollableSizeHint();
         }
 
         @Override
