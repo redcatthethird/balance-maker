@@ -195,9 +195,20 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_saveButtonMouseClicked
 
     private void addDebtMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addDebtMouseClicked
-        debtsPanel.add(new DebtPanel(++debts));
+        DebtPanel dp = new DebtPanel(++debts);
+        exclusion.install(dp.buyer);
+        
+        fieldValidators.put(dp.amount, AddTransactionDialog::isPositiveFloat);
+        dp.amount.getDocument().addDocumentListener(textChangeListener);
+        
+        debtsPanel.add(dp);
+        
+        validateFields();
+        
+        // TODO: Implement new Buyer addition.
     }//GEN-LAST:event_addDebtMouseClicked
 
+    // <editor-fold defaultstate="collapsed" desc="Form Components">
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDebt;
     private javax.swing.JTextField amountTextBox;
@@ -210,8 +221,11 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     private javax.swing.JButton saveButton;
     private javax.swing.JTextField storeTextBox;
     // End of variables declaration//GEN-END:variables
-
+            
+    // </editor-fold>
+    
     private void validateFields() {
+        // TODO: Separate input validation.
         boolean v = true;
         for (Map.Entry<JTextField, Predicate<String>> e : fieldValidators.entrySet()) {
             Boolean b = e.getValue().test(e.getKey().getText());
@@ -221,6 +235,8 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         }
         fieldsAreValid.set(v);
     }
+    
+    // TODO: Date selectioon!!
     
     private static boolean isNotEmpty(String text) { return !text.isEmpty(); }
     private static boolean isPositiveFloat(String text) {
@@ -254,26 +270,6 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         
         fieldsAreValid.addListener((o) -> saveButton.setEnabled(fieldsAreValid.get()));
         
-        this.fieldsAreValid.set(false);
-        
         validateFields();
-    }
-    
-    private class DoubleToDebtsPanelWidthConverter extends org.jdesktop.beansbinding.Converter<Double, Dimension> {
-
-        @Override
-        public Dimension convertForward(Double value) {
-            return new Dimension((int)(double)value, debtsPanel.getHeight());
-            // TODO: Fix the scrolling side of things.
-            // TODO: Optimise this thing too. It's slow as hell.
-            
-//            new ScrollableSizeHint();
-        }
-
-        @Override
-        public Double convertReverse(Dimension value) {
-            return value.getWidth();
-        }
-        
     }
 }
