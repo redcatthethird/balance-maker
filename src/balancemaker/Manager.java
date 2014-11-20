@@ -8,16 +8,19 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.CollectionList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.TransactionList;
 import ca.odell.glazedlists.UniqueList;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 public class Manager {
-    public final EventList<Transaction> transactions = new BasicEventList<>();
+    public final TransactionList<Transaction> transactions;
     public final EventList<Buyer> buyers;
     private final BinaryOperator<Float> sum = (x, y) -> x + y;
     
     public Manager() {   
+        this.transactions = new TransactionList<>(new BasicEventList<>());
+        
         // Building tree model
         CollectionList.Model<Transaction, Buyer> buyerTreeModel = parent -> {
             EventList<Buyer> buyers1;

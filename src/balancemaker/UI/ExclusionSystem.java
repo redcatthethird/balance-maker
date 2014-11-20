@@ -62,9 +62,9 @@ public class ExclusionSystem<U> implements ItemListener, ListEventListener<U> {
                 for (JComboBox<U> cb : selectors)
                     if (cb.getSelectedItem().equals(deleted)) {
                         cb.setSelectedItem(defaultValue);
-                        selectables.remove(deleted);
                         break;
                     }
+                selectables.remove(deleted);
             }
         }
         selectables.clear();

@@ -18,7 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import org.jdesktop.swingx.ScrollableSizeHint;
 import org.jdesktop.xswingx.PromptSupport;
 
 /**
@@ -70,12 +69,12 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         receiptTextBox = new javax.swing.JTextField();
         amountTextBox = new javax.swing.JTextField();
-        buyerList = new javax.swing.JComboBox<Buyer>();
+        buyerList = new javax.swing.JComboBox();
         paybackCheckBox = new javax.swing.JCheckBox();
         saveButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         addDebt = new javax.swing.JButton();
-        debtsScroller = new javax.swing.JScrollPane();
+        javax.swing.JScrollPane debtsScroller = new javax.swing.JScrollPane();
         debtsPanel = new org.jdesktop.swingx.JXPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -111,6 +110,18 @@ public class AddTransactionDialog extends javax.swing.JDialog {
 
         debtsPanel.setScrollableHeightHint(org.jdesktop.swingx.ScrollableSizeHint.NONE);
         debtsPanel.setScrollableWidthHint(org.jdesktop.swingx.ScrollableSizeHint.FIT);
+
+        javax.swing.GroupLayout debtsPanelLayout = new javax.swing.GroupLayout(debtsPanel);
+        debtsPanel.setLayout(debtsPanelLayout);
+        debtsPanelLayout.setHorizontalGroup(
+            debtsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 211, Short.MAX_VALUE)
+        );
+        debtsPanelLayout.setVerticalGroup(
+            debtsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
         debtsScroller.setViewportView(debtsPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -155,7 +166,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paybackCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(debtsScroller)
+                .addComponent(debtsScroller, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveButton)
@@ -190,10 +201,9 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDebt;
     private javax.swing.JTextField amountTextBox;
-    private javax.swing.JComboBox<Buyer> buyerList;
+    private javax.swing.JComboBox buyerList;
     private javax.swing.JButton cancelButton;
     private org.jdesktop.swingx.JXPanel debtsPanel;
-    private javax.swing.JScrollPane debtsScroller;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JCheckBox paybackCheckBox;
     private javax.swing.JTextField receiptTextBox;
@@ -225,6 +235,8 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     // TODO: Implement buyer and debtor selection.
 
     private void postInit() {
+        debtsPanel.setLayout(new WrapLayout());
+        
         exclusion.install(buyerList);
         
         PromptSupport.setPrompt("Enter store name", storeTextBox);

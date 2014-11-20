@@ -19,26 +19,6 @@ import javax.swing.table.AbstractTableModel;
 public class BalanceMakerUI extends javax.swing.JFrame{
     private final Manager manager = new Manager();
     private final ExclusionSystem<Buyer> exclusion = new ExclusionSystem<>(Buyer.none, manager.buyers);
-    private final Runnable updateDebtLabel = new Runnable() {
-        @Override
-        public void run() {
-            Buyer l = (Buyer)buyerLeft.getSelectedItem(); if(l==null) return;
-            boolean lNone = l.equals(Buyer.none);
-            Buyer r = (Buyer)buyerRight.getSelectedItem(); if(r==null) return;
-            boolean rNone = r.equals(Buyer.none);
-            
-            float debt = 0;
-            
-            if (lNone && rNone)
-                for (Buyer b : manager.buyers)
-                    debt += manager.getDebtsTo(b);
-            else if (lNone && !rNone) debt += manager.getDebtsTo(r);
-            else if (!lNone && rNone) debt += manager.getDebts(l);
-            else debt += manager.getDebtsTo(l, r);
-            
-            debtLabel.setText('£' + Float.toString(debt));
-        }
-    };
     
     public BalanceMakerUI() {
         initComponents();
@@ -104,15 +84,15 @@ public class BalanceMakerUI extends javax.swing.JFrame{
         removeTransaction = new javax.swing.JButton();
         exportFile = new javax.swing.JButton();
         importFile = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
+        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
         buyerLeft = new javax.swing.JComboBox();
-        jLabel2 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
         buyerRight = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
         extendDebtsButton = new javax.swing.JToggleButton();
         debtLabel = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
         transactionTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -274,11 +254,6 @@ public class BalanceMakerUI extends javax.swing.JFrame{
     private javax.swing.JButton exportFile;
     private javax.swing.JToggleButton extendDebtsButton;
     private javax.swing.JButton importFile;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton removeTransaction;
     private javax.swing.JTable transactionTable;
     // End of variables declaration//GEN-END:variables
@@ -312,8 +287,34 @@ public class BalanceMakerUI extends javax.swing.JFrame{
                     "Insurance query", JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (n == JOptionPane.YES_OPTION)
+            {
+                manager.transactions.beginEvent();
                 for (int i = 0; i < selRowCount; i++)
                     manager.transactions.remove(selRow);
+                manager.transactions.commitEvent();
+            }
         }
     }
+    @SuppressWarnings("Convert2Lambda")
+    private final Runnable updateDebtLabel = new Runnable() {
+
+        @Override
+        public void run() {
+            Buyer l = (Buyer)buyerLeft.getSelectedItem(); if(l==null) return;
+            boolean lNone = l.equals(Buyer.none);
+            Buyer r = (Buyer)buyerRight.getSelectedItem(); if(r==null) return;
+            boolean rNone = r.equals(Buyer.none);
+            
+            float debt = 0;
+            
+            if (lNone && rNone)
+                for (Buyer b : manager.buyers)
+                    debt += manager.getDebtsTo(b);
+            else if (lNone && !rNone) debt += manager.getDebtsTo(r);
+            else if (!lNone && rNone) debt += manager.getDebts(l);
+            else debt += manager.getDebtsTo(l, r);
+            
+            debtLabel.setText('£' + Float.toString(debt));
+        }
+    };
 }
