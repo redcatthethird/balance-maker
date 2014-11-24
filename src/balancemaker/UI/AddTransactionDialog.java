@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
-import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.SimpleBooleanProperty;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
