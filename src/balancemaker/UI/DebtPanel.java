@@ -7,8 +7,10 @@ package balancemaker.ui;
 
 import javax.swing.JButton;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.JTextComponent;
 import org.jdesktop.swingx.JXButton;
 import org.jdesktop.xswingx.BuddySupport;
+import org.jdesktop.xswingx.PromptSupport;
 
 /**
  *
@@ -31,8 +33,14 @@ public class DebtPanel extends javax.swing.JPanel {
         
         setName(getName() + id);
         
+        JTextComponent debtorEditor = ((JTextComponent)debtor.getEditor().getEditorComponent());
+        PromptSupport.setPrompt("Debtor #" + id, debtorEditor);
+        PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, debtorEditor);
+        
         amount.setPrompt("Amount owed");
+        amount.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT);
         amount.addBuddy(close, BuddySupport.Position.RIGHT);
+        // FIXME: Why doesn't the buddy button show? God..
     }
 
     /**
@@ -44,12 +52,12 @@ public class DebtPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buyer = new javax.swing.JComboBox<balancemaker.Buyer>();
+        debtor = new javax.swing.JComboBox<balancemaker.Buyer>();
         amount = new org.jdesktop.xswingx.JXTextField();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Debt #"));
 
-        buyer.setEditable(true);
+        debtor.setEditable(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -59,13 +67,13 @@ public class DebtPanel extends javax.swing.JPanel {
                 .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(amount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(buyer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(debtor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(buyer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(debtor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -74,7 +82,7 @@ public class DebtPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public org.jdesktop.xswingx.JXTextField amount;
-    public javax.swing.JComboBox<balancemaker.Buyer> buyer;
+    public javax.swing.JComboBox<balancemaker.Buyer> debtor;
     // End of variables declaration//GEN-END:variables
     public javax.swing.JButton close = new JButton("x");
 }
