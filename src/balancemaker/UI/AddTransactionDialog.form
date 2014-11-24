@@ -38,9 +38,9 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="saveButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="79" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                               <Component id="addDebt" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="80" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                               <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
@@ -80,7 +80,7 @@
               <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
               <Component id="paybackCheckBox" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="debtsScroller" pref="57" max="32767" attributes="0"/>
+              <Component id="debtsScroller" pref="104" max="32767" attributes="0"/>
               <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="saveButton" alignment="3" min="-2" max="-2" attributes="0"/>
