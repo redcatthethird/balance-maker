@@ -5,6 +5,7 @@
  */
 package balancemaker.ui;
 
+import javax.swing.JButton;
 import javax.swing.border.TitledBorder;
 import org.jdesktop.swingx.JXButton;
 import org.jdesktop.xswingx.BuddySupport;
@@ -28,6 +29,8 @@ public class DebtPanel extends javax.swing.JPanel {
         TitledBorder tb = (TitledBorder)getBorder();
         tb.setTitle(tb.getTitle() + id);
         
+        setName(getName() + id);
+        
         amount.setPrompt("Amount owed");
         amount.addBuddy(close, BuddySupport.Position.RIGHT);
     }
@@ -45,6 +48,8 @@ public class DebtPanel extends javax.swing.JPanel {
         amount = new org.jdesktop.xswingx.JXTextField();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Debt #"));
+
+        buyer.setEditable(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -71,5 +76,5 @@ public class DebtPanel extends javax.swing.JPanel {
     public org.jdesktop.xswingx.JXTextField amount;
     public javax.swing.JComboBox<balancemaker.Buyer> buyer;
     // End of variables declaration//GEN-END:variables
-    public javax.swing.JButton close = new JXButton("x");
+    public javax.swing.JButton close = new JButton("x");
 }

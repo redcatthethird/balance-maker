@@ -14,6 +14,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 import javax.swing.JComboBox;
 
 /**
@@ -23,9 +24,9 @@ import javax.swing.JComboBox;
  */
 public class ExclusionSystem<U> implements ItemListener, ListEventListener<U> {
     // TODO: Notify the user of deselection.
-    private final U defaultValue;
-    private final EventList<U> selectables;
-    private final List<JComboBox<U>> selectors = new LinkedList<>();
+    protected final U defaultValue;
+    protected final EventList<U> selectables;
+    protected final List<JComboBox<U>> selectors = new LinkedList<>();
     
     public ExclusionSystem(U defaultValue, EventList<U> selectables) {
         this.defaultValue = defaultValue;
@@ -70,5 +71,22 @@ public class ExclusionSystem<U> implements ItemListener, ListEventListener<U> {
         selectables.clear();
         selectables.addAll(listChanges.getSourceList());
         selectables.add(0, defaultValue);
+    }
+    
+    public Predicate<String> getPredicateFor(JComboBox<U> selector) {
+        if (selector == null || !selectors.contains(selector))
+            throw new IllegalArgumentException();
+        return (String t) -> {
+            // The default value is not valid
+            if (t.equals(defaultValue.toString())) return false;
+            // Go through all other selectors
+            for (JComboBox<U> cb : selectors) {
+                if (selector.equals(cb)) continue;
+                // If the string is anywhere else as well, it's invalid here
+                if (cb.getSelectedItem().toString().equals(t))
+                    return false;
+            }
+            return true;
+        };
     }
 }

@@ -7,17 +7,19 @@ package balancemaker.ui;
 
 import balancemaker.*;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
+import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.SimpleBooleanProperty;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 import org.jdesktop.xswingx.PromptSupport;
 
 /**
@@ -25,13 +27,16 @@ import org.jdesktop.xswingx.PromptSupport;
  * @author Andu
  */
 public class AddTransactionDialog extends javax.swing.JDialog {
+    // TODO: Use borders for different kinds of components.
     private final Border defaultTextFieldBorder = new JTextField().getBorder();
     private final Border invalidTextFieldBorder = BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(Color.RED, 2), defaultTextFieldBorder);
+    // NOTE: Consider buddy icons as an alternative invalidity notifier.
     
-    private final Map<JTextField, Predicate<String>> fieldValidators = new HashMap<>(3);
-    private final javafx.beans.property.BooleanPropertyBase fieldsAreValid =
-            new javafx.beans.property.SimpleBooleanProperty(true);
+    private final Map<JTextComponent, Predicate<String>> fieldValidators = new HashMap<>(3);
+    
+    private final SimpleBooleanProperty fieldsValid = new SimpleBooleanProperty(true);
+    
     private final DocumentListener textChangeListener = new DocumentListener() {
         @Override
         public void changedUpdate(DocumentEvent e) { validateFields(); }
@@ -82,6 +87,8 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         setMinimumSize(new java.awt.Dimension(300, 316));
 
         jLabel2.setText("Date :");
+
+        buyerList.setEditable(true);
 
         paybackCheckBox.setText("Payback");
 
@@ -201,6 +208,10 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         fieldValidators.put(dp.amount, AddTransactionDialog::isPositiveFloat);
         dp.amount.getDocument().addDocumentListener(textChangeListener);
         
+        JTextComponent debtor = (JTextComponent) dp.buyer.getEditor().getEditorComponent();
+        fieldValidators.put(debtor, exclusion.getPredicateFor(dp.buyer));
+        debtor.getDocument().addDocumentListener(textChangeListener);
+        
         debtsPanel.add(dp);
         
         validateFields();
@@ -225,15 +236,15 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     // </editor-fold>
     
     private void validateFields() {
-        // TODO: Separate input validation.
+        // FIXME: Separate input validation.
         boolean v = true;
-        for (Map.Entry<JTextField, Predicate<String>> e : fieldValidators.entrySet()) {
+        for (Map.Entry<JTextComponent, Predicate<String>> e : fieldValidators.entrySet()) {
             Boolean b = e.getValue().test(e.getKey().getText());
             v = v && b;
             Border border = b ? defaultTextFieldBorder : invalidTextFieldBorder;
             e.getKey().setBorder(border);
         }
-        fieldsAreValid.set(v);
+        fieldsValid.set(v);
     }
     
     // TODO: Date selectioon!!
@@ -265,10 +276,14 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         fieldValidators.put(storeTextBox, AddTransactionDialog::isNotEmpty);
         fieldValidators.put(amountTextBox, AddTransactionDialog::isPositiveFloat);
         
-        for (JTextField tf : fieldValidators.keySet())
+        JTextComponent debtor = (JTextComponent) buyerList.getEditor().getEditorComponent();
+        fieldValidators.put(debtor, exclusion.getPredicateFor(buyerList));
+        debtor.getDocument().addDocumentListener(textChangeListener);
+        
+        for (JTextComponent tf : fieldValidators.keySet())
             tf.getDocument().addDocumentListener(textChangeListener);
         
-        fieldsAreValid.addListener((o) -> saveButton.setEnabled(fieldsAreValid.get()));
+        fieldsValid.addListener((o) -> saveButton.setEnabled(fieldsValid.get()));
         
         validateFields();
     }
