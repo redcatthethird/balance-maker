@@ -44,6 +44,7 @@ public class DebtPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        close = new javax.swing.JButton();
         debtor = new javax.swing.JComboBox<balancemaker.Buyer>();
         amount = new javax.swing.JTextField();
         close = new org.jdesktop.swingx.JXButton();
