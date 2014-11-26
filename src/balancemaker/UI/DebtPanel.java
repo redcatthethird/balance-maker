@@ -44,13 +44,12 @@ public class DebtPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        close = new javax.swing.JButton();
         debtor = new javax.swing.JComboBox<balancemaker.Buyer>();
         amount = new javax.swing.JTextField();
         close = new org.jdesktop.swingx.JXButton();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Debt #"));
-        setName("Name #"); // NOI18N
+        setName("Debt #"); // NOI18N
 
         debtor.setEditable(true);
 
@@ -58,6 +57,7 @@ public class DebtPanel extends javax.swing.JPanel {
         close.setBorder(null);
         close.setForeground(new java.awt.Color(204, 204, 204));
         close.setText("x");
+        close.setMargin(new java.awt.Insets(1, 5, 1, 5));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

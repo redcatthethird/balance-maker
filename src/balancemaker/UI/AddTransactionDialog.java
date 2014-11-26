@@ -6,15 +6,22 @@
 package balancemaker.ui;
 
 import balancemaker.*;
+import com.sun.java.accessibility.util.SwingEventMonitor;
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleBooleanProperty;
 import javax.swing.BorderFactory;
-import javax.swing.JTextField;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -26,11 +33,15 @@ import org.jdesktop.xswingx.PromptSupport;
  * @author Andu
  */
 public class AddTransactionDialog extends javax.swing.JDialog {
-    // TODO: Use borders for different kinds of components.
-    private final Border defaultTextFieldBorder = new JTextField().getBorder();
-    private final Border invalidTextFieldBorder = BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(Color.RED, 2), defaultTextFieldBorder);
-    // NOTE: Consider buddy icons as an alternative invalidity notifier.
+    private final Border redBorder = BorderFactory.createLineBorder(Color.RED, 2);
+    private Border getDefaultBorder(JComponent c)
+            throws InstantiationException, IllegalAccessException {
+        return c.getClass().newInstance().getBorder();
+    }
+    private Border getInvalidBorder(JComponent c)
+            throws InstantiationException, IllegalAccessException {
+        return BorderFactory.createCompoundBorder(redBorder, getDefaultBorder(c));
+    }
     
     private final Map<JTextComponent, Predicate<String>> fieldValidators = new HashMap<>(3);
     
@@ -218,6 +229,23 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         
         debtsPanel.add(dp);
         
+        
+        MouseAdapter ml = new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    SwingUtilities.invokeLater(() -> {
+                        
+                        debtsPanel.remove(dp);
+                        exclusion.uninstall(dp.debtor);
+                        // FIXME: validation.uninstall(dp);
+                        debtsPanel.repaint();
+                    });
+                }
+            }
+        };
+        dp.close.addMouseListener(ml);
+        
         validateFields();
     }//GEN-LAST:event_addDebtMouseClicked
 
@@ -241,10 +269,14 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         // FIXME: Separate input validation.
         boolean v = true;
         for (Map.Entry<JTextComponent, Predicate<String>> e : fieldValidators.entrySet()) {
-            Boolean b = e.getValue().test(e.getKey().getText());
+            JTextComponent t = e.getKey();
+            Boolean b = e.getValue().test(t.getText());
             v = v && b;
-            Border border = b ? defaultTextFieldBorder : invalidTextFieldBorder;
-            e.getKey().setBorder(border);
+            try {
+                t.setBorder(b ? getDefaultBorder(t) : getInvalidBorder(t));
+            } catch (InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(AddTransactionDialog.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         fieldsValid.set(v);
     }

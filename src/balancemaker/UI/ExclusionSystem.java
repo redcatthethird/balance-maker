@@ -15,6 +15,7 @@ import java.awt.event.ItemListener;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 /**
@@ -42,7 +43,12 @@ public class ExclusionSystem<U> implements ItemListener, ListEventListener<U> {
         cb.addItemListener(this);
         cb.setSelectedItem(defaultValue);
     }
-
+    public void uninstall(JComboBox<U> cb) {
+        selectors.remove(cb);
+        cb.removeItemListener(this);
+        cb.setModel(new DefaultComboBoxModel<>());
+    }
+    
     @Override
     public void itemStateChanged(ItemEvent e) {
         // On selection only,
@@ -89,4 +95,5 @@ public class ExclusionSystem<U> implements ItemListener, ListEventListener<U> {
             return true;
         };
     }
+
 }
