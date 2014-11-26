@@ -6,58 +6,25 @@
 package balancemaker.ui;
 
 import balancemaker.*;
-import com.sun.java.accessibility.util.SwingEventMonitor;
-import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.property.SimpleBooleanProperty;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javafx.beans.Observable;
+import javafx.beans.property.BooleanPropertyBase;
 import javax.swing.text.JTextComponent;
 import org.jdesktop.xswingx.PromptSupport;
 
 /**
  *
- * @author Andu
+ * @author Red
  */
 public class AddTransactionDialog extends javax.swing.JDialog {
-    private final Border redBorder = BorderFactory.createLineBorder(Color.RED, 2);
-    private Border getDefaultBorder(JComponent c)
-            throws InstantiationException, IllegalAccessException {
-        return c.getClass().newInstance().getBorder();
-    }
-    private Border getInvalidBorder(JComponent c)
-            throws InstantiationException, IllegalAccessException {
-        return BorderFactory.createCompoundBorder(redBorder, getDefaultBorder(c));
-    }
     
-    private final Map<JTextComponent, Predicate<String>> fieldValidators = new HashMap<>(3);
-    
-    private final SimpleBooleanProperty fieldsValid = new SimpleBooleanProperty(true);
-    
-    private final DocumentListener textChangeListener = new DocumentListener() {
-        @Override
-        public void changedUpdate(DocumentEvent e) { validateFields(); }
-        @Override
-        public void removeUpdate(DocumentEvent e) { validateFields(); }
-        @Override
-        public void insertUpdate(DocumentEvent e) { validateFields(); }
-    };
     
     private final Manager manager;
     private final ExclusionSystem<Buyer> exclusion;
+    private final ValidationSystem validation;
     private int debts = 0;
 
     /**
@@ -72,6 +39,7 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         
         this.manager = manager;
         this.exclusion = new ExclusionSystem<>(Buyer.none, manager.buyers);
+        this.validation = new ValidationSystem();
         
         postInit();
     }
@@ -218,35 +186,27 @@ public class AddTransactionDialog extends javax.swing.JDialog {
 
     private void addDebtMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addDebtMouseClicked
         DebtPanel dp = new DebtPanel(++debts);
+        
+        validation.install(dp.amount, ValidationSystem::isPositiveFloat);
+        
         exclusion.install(dp.debtor);
-        
-        fieldValidators.put(dp.amount, AddTransactionDialog::isPositiveFloat);
-        dp.amount.getDocument().addDocumentListener(textChangeListener);
-        
         JTextComponent debtor = (JTextComponent) dp.debtor.getEditor().getEditorComponent();
-        fieldValidators.put(debtor, exclusion.getPredicateFor(dp.debtor));
-        debtor.getDocument().addDocumentListener(textChangeListener);
+        validation.install(debtor, exclusion.getPredicateFor(dp.debtor));
         
         debtsPanel.add(dp);
         
-        
-        MouseAdapter ml = new MouseAdapter() {
+        dp.close.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getClickCount() == 1) {
-                    SwingUtilities.invokeLater(() -> {
-                        
-                        debtsPanel.remove(dp);
-                        exclusion.uninstall(dp.debtor);
-                        // FIXME: validation.uninstall(dp);
-                        debtsPanel.repaint();
-                    });
+                    debtsPanel.remove(dp);
+                    exclusion.uninstall(dp.debtor);
+                    validation.uninstall(dp.amount);
+                    validation.uninstall(debtor);
+                    debtsPanel.repaint();
                 }
             }
-        };
-        dp.close.addMouseListener(ml);
-        
-        validateFields();
+        });
     }//GEN-LAST:event_addDebtMouseClicked
 
     // <editor-fold defaultstate="collapsed" desc="Form Components">
@@ -264,32 +224,6 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
             
     // </editor-fold>
-    
-    private void validateFields() {
-        // FIXME: Separate input validation.
-        boolean v = true;
-        for (Map.Entry<JTextComponent, Predicate<String>> e : fieldValidators.entrySet()) {
-            JTextComponent t = e.getKey();
-            Boolean b = e.getValue().test(t.getText());
-            v = v && b;
-            try {
-                t.setBorder(b ? getDefaultBorder(t) : getInvalidBorder(t));
-            } catch (InstantiationException | IllegalAccessException ex) {
-                Logger.getLogger(AddTransactionDialog.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        fieldsValid.set(v);
-    }
-    
-    private static boolean isNotEmpty(String text) { return !text.isEmpty(); }
-    private static boolean isPositiveFloat(String text) {
-        try {
-            float f = Float.parseFloat(text);
-            return f >= 0;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
 
     private void postInit() {
         debtsPanel.setLayout(new WrapLayout());
@@ -308,20 +242,17 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         
         date.setDate(Date.from(Instant.now()));
         
-        fieldValidators.put(storeTextBox, AddTransactionDialog::isNotEmpty);
-        fieldValidators.put(amountTextBox, AddTransactionDialog::isPositiveFloat);
+        validation.fieldsValid.addListener(this::validityChanged);
         
-        
+        validation.install(storeTextBox, ValidationSystem::isNotEmpty);
+        validation.install(amountTextBox, ValidationSystem::isPositiveFloat);
         
         JTextComponent debtor = (JTextComponent) buyerList.getEditor().getEditorComponent();
-        fieldValidators.put(debtor, exclusion.getPredicateFor(buyerList));
-        debtor.getDocument().addDocumentListener(textChangeListener);
-        
-        for (JTextComponent tf : fieldValidators.keySet())
-            tf.getDocument().addDocumentListener(textChangeListener);
-        
-        fieldsValid.addListener((o) -> saveButton.setEnabled(fieldsValid.get()));
-        
-        validateFields();
+        validation.install(debtor, exclusion.getPredicateFor(buyerList));
+    }
+    
+    private void validityChanged(Observable o) {
+        BooleanPropertyBase b = (BooleanPropertyBase) o;
+        saveButton.setEnabled(b.get());
     }
 }
