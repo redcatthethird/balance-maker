@@ -33,22 +33,22 @@ class TransactionTableFormat implements AdvancedTableFormat<Transaction> {
             case 2: return Date.class;
             case 1:
             case 3: return String.class;
-            case 4: return Float.class;
+            case 5: return Buyer.class;
             case 6: return Boolean.class;
-            default: return Buyer.class;
+            default: return Float.class;
         }
     }
 
     @Override
     public Comparator getColumnComparator(int column) {
         switch (column) {
+            case 5: return Buyer.idComparator;
             case 0:
-            case 1:
             case 2:
+            case 1:
             case 3:
             case 4:
-            case 6: Comparator.naturalOrder();
-            default: return Buyer.idComparator;
+            default: return Comparator.naturalOrder();
         }
     }
 
@@ -74,7 +74,7 @@ class TransactionTableFormat implements AdvancedTableFormat<Transaction> {
                 case 2: return t.getDate();
                 case 3: return t.getReceipt();
                 case 4: return t.getAmount();
-                case 5: return t.getBuyer().getName();
+                case 5: return t.getBuyer();
                 case 6: return t.isPayback();
                 default: return null;
             }

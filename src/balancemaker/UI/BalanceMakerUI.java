@@ -6,8 +6,10 @@
 package balancemaker.ui;
 
 import balancemaker.*;
+import ca.odell.glazedlists.SortedList;
 import java.awt.event.*;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
+import ca.odell.glazedlists.swing.TableComparatorChooser;
 import java.awt.EventQueue;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
@@ -23,15 +25,28 @@ public class BalanceMakerUI extends javax.swing.JFrame{
     public BalanceMakerUI() {
         initComponents();
         postInit();
-    }// TODO: Make the columns sortable.
+    }
     private void postInit() {
         populateList();
+        
+        // Create the list of transactions sorted by id.
+        SortedList<Transaction> sortedTransactions;
+        sortedTransactions = new SortedList<>(
+                manager.transactions,
+                (t1, t2) -> t1.getId() - t2.getId());
         
         // Set the table model.
         transactionTable.setModel(
                 GlazedListsSwing.eventTableModelWithThreadProxyList(
-                        manager.transactions,
+                        sortedTransactions,
                         new TransactionTableFormat(manager.buyers)));
+        
+        // Prepare the table column header sorting behaviour.
+        TableComparatorChooser.install(
+                transactionTable,
+                sortedTransactions,
+                TableComparatorChooser.MULTIPLE_COLUMN_MOUSE_WITH_UNDO);
+        
         // Refresh the table on list changes.
         manager.buyers.addListEventListener(e ->
                 ((AbstractTableModel)transactionTable.getModel())

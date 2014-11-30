@@ -61,5 +61,5 @@ public final class Buyer {
     public float getAmountSpent(String store){
         return Manager.getAmountSpent(this, store);}*/
     
-    public static Comparator<Buyer> idComparator = Comparator.comparingInt(b -> b.id);
+    public static Comparator<Buyer> idComparator = (o1, o2) -> o1.id - o2.id;
 }
