@@ -61,5 +61,7 @@ public final class Buyer {
     public float getAmountSpent(String store){
         return Manager.getAmountSpent(this, store);}*/
     
+    // FIXME: Debt computing algorithm.
+    
     public static Comparator<Buyer> idComparator = (o1, o2) -> o1.id - o2.id;
 }

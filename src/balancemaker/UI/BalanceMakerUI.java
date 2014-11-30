@@ -21,7 +21,7 @@ import javax.swing.table.AbstractTableModel;
 public class BalanceMakerUI extends javax.swing.JFrame{
     private final Manager manager = new Manager();
     private final ExclusionSystem<Buyer> exclusion = new ExclusionSystem<>(Buyer.none, manager.buyers);
-    
+    // TODO: Persistence.
     public BalanceMakerUI() {
         initComponents();
         postInit();
