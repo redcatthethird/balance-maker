@@ -24,7 +24,6 @@ import javax.swing.JComboBox;
  * @param <U>
  */
 public class ExclusionSystem<U> implements ItemListener, ListEventListener<U> {
-    // TODO: Notify the user of deselection.
     protected final U defaultValue;
     protected final EventList<U> selectables;
     protected final List<JComboBox<U>> selectors = new LinkedList<>();

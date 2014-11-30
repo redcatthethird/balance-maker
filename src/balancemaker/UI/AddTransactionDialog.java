@@ -6,12 +6,17 @@
 package balancemaker.ui;
 
 import balancemaker.*;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.Instant;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Consumer;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanPropertyBase;
+import javax.swing.JOptionPane;
 import javax.swing.text.JTextComponent;
 import org.jdesktop.xswingx.PromptSupport;
 
@@ -20,8 +25,6 @@ import org.jdesktop.xswingx.PromptSupport;
  * @author Red
  */
 public class AddTransactionDialog extends javax.swing.JDialog {
-    
-    
     private final Manager manager;
     private final ExclusionSystem<Buyer> exclusion;
     private final ValidationSystem validation;
@@ -170,16 +173,39 @@ public class AddTransactionDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonMouseClicked
 
     private void saveButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseClicked
-        manager.transactions.add(new TransactionBuilder()
-                .Store(storeTextBox.getText())
-                .Receipt(receiptTextBox.getText())
-                .Date(Date.from(Instant.now()))
-                .Amount(Float.valueOf(amountTextBox.getText()))
-                .Payback(paybackCheckBox.isSelected())
-                .Buyer(manager.buyers.get(0))
-                .createTransaction());
+        // This should only be called if all fields are valid.
+        List<String> bl = new LinkedList<>();
+        if (!manager.existsBuyer(buyerList.getSelectedItem().toString()))
+            bl.add(buyerList.getSelectedItem().toString());
+        forEachDebtor(s -> { if (!manager.existsBuyer(s)) bl.add(s); });
         
-        // TODO: The actual saving and rescuing.
+        if (bl.size() > 0) {
+            StringBuilder sb = new StringBuilder("Are you sure you want to" +
+                    " keep track of the following buyers:\n");
+            for (String s : bl) sb.append(s).append('\n');
+            if (JOptionPane.showConfirmDialog(
+                    this,
+                    sb.toString(),
+                    "Confirm addition",
+                    JOptionPane.YES_NO_OPTION)
+                == JOptionPane.NO_OPTION)
+                return;
+        }
+        
+        TransactionBuilder b = new TransactionBuilder();
+        b.Store(storeTextBox.getText());
+        b.Receipt(receiptTextBox.getText());
+        b.Date(date.getDate());
+        b.Amount(Float.valueOf(amountTextBox.getText()));
+        b.Payback(paybackCheckBox.isSelected());
+        b.Buyer(manager.getBuyer(buyerList.getSelectedItem().toString()));
+        
+        forEachDebt(dp -> b.addDebt(
+                Float.parseFloat(dp.amount.getText()),
+                manager.getBuyer(dp.debtor.getSelectedItem().toString())
+        ));
+        
+        manager.transactions.add(b.createTransaction());
         
         dispose();
     }//GEN-LAST:event_saveButtonMouseClicked
@@ -250,9 +276,24 @@ public class AddTransactionDialog extends javax.swing.JDialog {
         JTextComponent debtor = (JTextComponent) buyerList.getEditor().getEditorComponent();
         validation.install(debtor, exclusion.getPredicateFor(buyerList));
     }
-    
     private void validityChanged(Observable o) {
         BooleanPropertyBase b = (BooleanPropertyBase) o;
         saveButton.setEnabled(b.get());
+    }
+    
+    private void forEachDebt(Consumer<DebtPanel> cons) {
+        for (Component debtPanel : debtsPanel.getComponents())
+            if (debtPanel instanceof DebtPanel) {
+                DebtPanel dp = (DebtPanel) debtPanel;
+                cons.accept(dp);
+            }
+    }
+    private void forEachDebtor(Consumer<String> cons) {
+        for (Component debtPanel : debtsPanel.getComponents())
+            if (debtPanel instanceof DebtPanel) {
+                DebtPanel dp = (DebtPanel) debtPanel;
+                String debtor = dp.debtor.getSelectedItem().toString();
+                cons.accept(debtor);
+            }
     }
 }

@@ -112,6 +112,4 @@ public final class Transaction {
         final Transaction other = (Transaction) obj;
         return this.id == other.id;
     }
-    
-    // TODO: For the sake of sake, get some databases in here. Please.
 }

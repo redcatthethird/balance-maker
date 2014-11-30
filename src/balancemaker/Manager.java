@@ -28,7 +28,8 @@ public class Manager {
                     transactions.getPublisher(),
                     transactions.getReadWriteLock());
             buyers1.add(parent.getBuyer());
-            buyers1.addAll(parent.getDebtList().stream().map(d -> d.getDebtor()).collect(Collectors.toList()));
+            buyers1.addAll(parent.getDebtList().stream().map(d -> d.getDebtor())
+                    .collect(Collectors.toList()));
             return buyers1;
         };
         
@@ -64,6 +65,16 @@ public class Manager {
     public float getDebtsTo(Buyer b1, Buyer b2) {
         return transactions.stream().filter(t -> (t.getBuyer().equals(b2)))
                 .map((t) -> t.getDebtFromBuyer(b1)).reduce(0f, sum);
+    }
+    
+    public boolean existsBuyer(String buyer) {
+        return buyers.stream().map(b -> b.name).anyMatch(s -> s.equals(buyer));
+    }
+    public Buyer getBuyer(String buyer) {
+        for (Buyer b : buyers)
+            if (b.name.equals(buyer))
+                return b;
+        return new Buyer(buyer);
     }
     /*
     // Returns the amount spent by b.
