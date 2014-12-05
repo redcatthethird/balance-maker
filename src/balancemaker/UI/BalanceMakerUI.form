@@ -37,7 +37,7 @@
                       <Component id="exportFile" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="importFile" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="532" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="440" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -55,8 +55,8 @@
                   <Component id="importFile" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="506" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane1" pref="512" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -81,13 +81,19 @@
     </Component>
     <Component class="javax.swing.JButton" name="exportFile">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Export to file"/>
+        <Property name="text" type="java.lang.String" value="Export to spreadsheet"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="importFile">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Import from file"/>
+        <Property name="text" type="java.lang.String" value="Import from spreadsheet"/>
+        <Property name="toolTipText" type="java.lang.String" value="All the importing code is there, but the authentication bit isn&apos;t implemented. Lack of motivation, probably."/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="importFileMouseClicked"/>
+      </Events>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel1">
       <AuxValues>

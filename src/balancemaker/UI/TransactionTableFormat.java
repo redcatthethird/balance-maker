@@ -8,6 +8,8 @@ package balancemaker.ui;
 import balancemaker.Buyer;
 import balancemaker.Transaction;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -31,11 +33,9 @@ class TransactionTableFormat implements AdvancedTableFormat<Transaction> {
         switch (column) {
             case 0: return Integer.class;
             case 2: return Date.class;
-            case 1:
-            case 3: return String.class;
             case 5: return Buyer.class;
             case 6: return Boolean.class;
-            default: return Float.class;
+            default: return String.class;
         }
     }
 
@@ -43,11 +43,6 @@ class TransactionTableFormat implements AdvancedTableFormat<Transaction> {
     public Comparator getColumnComparator(int column) {
         switch (column) {
             case 5: return Buyer.idComparator;
-            case 0:
-            case 2:
-            case 1:
-            case 3:
-            case 4:
             default: return Comparator.naturalOrder();
         }
     }
@@ -67,20 +62,21 @@ class TransactionTableFormat implements AdvancedTableFormat<Transaction> {
 
     @Override
     public Object getColumnValue(Transaction t, int column) {
+        NumberFormat nf = DecimalFormat.getCurrencyInstance();
         if (column < columns.length)
             switch (column) {
                 case 0: return t.getId();
                 case 1: return t.getStore();
                 case 2: return t.getDate();
                 case 3: return t.getReceipt();
-                case 4: return t.getAmount();
+                case 4: return nf.format(t.getAmount());
                 case 5: return t.getBuyer();
                 case 6: return t.isPayback();
                 default: return null;
             }
         else if (column < getColumnCount()) {
             Buyer b = buyers.get(column - columns.length);
-            return t.getDebtFromBuyer(b);
+            return nf.format(t.getDebtFromBuyer(b));
         }
         return null;
     }

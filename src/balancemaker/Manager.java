@@ -40,6 +40,8 @@ public class Manager {
                     new UniqueList<>(collectedBuyers, Buyer.idComparator)));
     }
     
+    // TODO: Use the proper functions for getting useful statistics.
+    
     public List<Transaction> getTransactionsFromBuyer(Buyer b) {
         return transactions.stream().filter((t) -> (t.getBuyer().equals(b)))
                 .collect(Collectors.toList());
@@ -67,12 +69,15 @@ public class Manager {
                 .map((t) -> t.getDebtFromBuyer(b1)).reduce(0f, sum);
     }
     
+    // Case insensitive.
     public boolean existsBuyer(String buyer) {
-        return buyers.stream().map(b -> b.name).anyMatch(s -> s.equals(buyer));
+        final String lwr = buyer.toLowerCase();
+        return buyers.stream().map(b -> b.name.toLowerCase()).anyMatch(s -> s.equals(lwr));
     }
     public Buyer getBuyer(String buyer) {
+        final String lwr = buyer.toLowerCase();
         for (Buyer b : buyers)
-            if (b.name.equals(buyer))
+            if (b.name.toLowerCase().equals(lwr))
                 return b;
         return new Buyer(buyer);
     }
@@ -109,25 +114,5 @@ public class Manager {
             if(t.getBuyer().equals(b) && t.getStore().equals(store))
                 amount += t.getAmount();
         return amount;
-    }*/
-    
-    // This will maintain the buyers list, keeping only referenced buyers
-    /*private void updateBuyers(ListEvent<Transaction> le) {
-        do {
-            if (le.isReordering()) continue;
-            if (le.getType() == ListEvent.)
-        } while (le.nextBlock());
-        
-        LinkedList<Buyer> temp = new LinkedList<>();
-        buyers.clear();
-        for (Transaction t : transactions) {
-            temp.add(t.getBuyer());
-            t.getDebtList().forEach(d -> temp.add(d.getDebtor()));
-        }
-        buyers.addAll(
-                temp.stream().distinct()
-                .sorted((Buyer o1, Buyer o2) -> o1.getId() - o2.getId())
-                .collect(Collectors.toCollection(FXCollections::observableArrayList))
-        );
     }*/
 }

@@ -11,6 +11,8 @@ import java.awt.event.*;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
 import java.awt.EventQueue;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
@@ -21,7 +23,6 @@ import javax.swing.table.AbstractTableModel;
 public class BalanceMakerUI extends javax.swing.JFrame{
     private final Manager manager = new Manager();
     private final ExclusionSystem<Buyer> exclusion = new ExclusionSystem<>(Buyer.none, manager.buyers);
-    // TODO: Persistence.
     public BalanceMakerUI() {
         initComponents();
         postInit();
@@ -62,6 +63,7 @@ public class BalanceMakerUI extends javax.swing.JFrame{
         // Make the two combo boxes mutually exclusive.
         exclusion.install(buyerLeft); exclusion.install(buyerRight);
     }
+    // TODO: Remove, for god's sake, every unneeded library.
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -127,9 +129,17 @@ public class BalanceMakerUI extends javax.swing.JFrame{
             }
         });
 
-        exportFile.setText("Export to file");
+        exportFile.setText("Export to spreadsheet");
+        exportFile.setEnabled(false);
 
-        importFile.setText("Import from file");
+        importFile.setText("Import from spreadsheet");
+        importFile.setToolTipText("All the importing code is there, but the authentication bit isn't implemented. Lack of motivation, probably.");
+        importFile.setEnabled(false);
+        importFile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                importFileMouseClicked(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Debt from");
@@ -220,7 +230,7 @@ public class BalanceMakerUI extends javax.swing.JFrame{
                         .addComponent(exportFile)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(importFile)
-                        .addGap(0, 532, Short.MAX_VALUE)))
+                        .addGap(0, 440, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -233,8 +243,8 @@ public class BalanceMakerUI extends javax.swing.JFrame{
                     .addComponent(exportFile)
                     .addComponent(importFile))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -247,6 +257,11 @@ public class BalanceMakerUI extends javax.swing.JFrame{
     private void transactionTableKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_transactionTableKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_DELETE) removeSelectedTransactions();
     }//GEN-LAST:event_transactionTableKeyPressed
+
+    private void importFileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_importFileMouseClicked
+        if (!importFile.isEnabled()) return;
+        //new balancemaker.ui.SpreadsheetImporter().run(manager);
+    }//GEN-LAST:event_importFileMouseClicked
     private void addTransactionMouseClicked(MouseEvent evt) {                                            
         AddTransactionDialog dlg = new AddTransactionDialog(this, true, manager);
         dlg.setVisible(true);
@@ -312,7 +327,6 @@ public class BalanceMakerUI extends javax.swing.JFrame{
     }
     @SuppressWarnings("Convert2Lambda")
     private final Runnable updateDebtLabel = new Runnable() {
-
         @Override
         public void run() {
             Buyer l = (Buyer)buyerLeft.getSelectedItem(); if(l==null) return;
@@ -329,7 +343,7 @@ public class BalanceMakerUI extends javax.swing.JFrame{
             else if (!lNone && rNone) debt += manager.getDebts(l);
             else debt += manager.getDebtsTo(l, r);
             
-            debtLabel.setText('£' + Float.toString(debt));
+            debtLabel.setText(DecimalFormat.getCurrencyInstance().format(debt));
         }
     };
 }
